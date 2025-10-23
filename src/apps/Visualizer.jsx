@@ -53,15 +53,7 @@ function Visualizer({ hardwareData }) {
       const density = Math.abs(50 + encoders[1].value * 5);
       const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.1); // Minimum size of 0.3 (30%)
       const speedMultiplier = Math.max(0.5, 1 + encoders[3].value * 0.05); // Minimum speed of 0.5 (50%)
-
-      // Use ranges for pattern switching
-      const encoderValue = encoders[4].value;
-      let pattern;
-      if (encoderValue < -10) pattern = 0; // Circular motion
-      else if (encoderValue < -3) pattern = 1; // Wave motion
-      else if (encoderValue < 3) pattern = 2; // Spiral
-      else if (encoderValue < 10) pattern = 3; // Random motion
-      else pattern = Math.floor((encoderValue / 5) % 4); // Cycle through patterns for larger values
+      const rotationIntensity = encoders[4].value * 0.001; // Rotation/spiral effect
 
       // Determine active colors
       const activeColors = [];
@@ -128,45 +120,23 @@ function Visualizer({ hardwareData }) {
 
       // Update and draw particles
       particlesRef.current.forEach((particle, index) => {
-        // Update position based on pattern
-        switch (pattern) {
-          case 0: // Circular motion - orbit around center
-            const centerX0 = canvas.width / 2;
-            const centerY0 = canvas.height / 2;
-            particle.angle += 0.02 * speedMultiplier;
-            const radius0 = 200 + particle.size * 20;
-            particle.x = centerX0 + Math.cos(particle.angle) * radius0;
-            particle.y = centerY0 + Math.sin(particle.angle) * radius0;
-            break;
-          case 1: // Wave motion - horizontal waves
-            particle.x += particle.vx * speedMultiplier;
-            const waveOffset = (particle.size / 5) * Math.PI * 2;
-            particle.y =
-              canvas.height / 2 +
-              Math.sin(particle.x * 0.01 + Date.now() * 0.003 + waveOffset) *
-                200;
-            break;
-          case 2: // Spiral - rotate around center
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const distance = Math.sqrt(
-              Math.pow(particle.x - centerX, 2) +
-                Math.pow(particle.y - centerY, 2),
-            );
-            const angle = Math.atan2(
-              particle.y - centerY,
-              particle.x - centerX,
-            );
-            particle.x =
-              centerX +
-              Math.cos(angle + 0.05 * speedMultiplier) * (distance + 0.5);
-            particle.y =
-              centerY +
-              Math.sin(angle + 0.05 * speedMultiplier) * (distance + 0.5);
-            break;
-          default: // Random motion - chaotic movement
-            particle.x += particle.vx * speedMultiplier * 2;
-            particle.y += particle.vy * speedMultiplier * 2;
+        // Basic movement
+        particle.x += particle.vx * speedMultiplier;
+        particle.y += particle.vy * speedMultiplier;
+
+        // Apply rotation/spiral effect based on encoder 4
+        if (rotationIntensity !== 0) {
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          const dx = particle.x - centerX;
+          const dy = particle.y - centerY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const angle = Math.atan2(dy, dx);
+
+          // Rotate around center
+          const newAngle = angle + rotationIntensity;
+          particle.x = centerX + Math.cos(newAngle) * distance;
+          particle.y = centerY + Math.sin(newAngle) * distance;
         }
 
         // Wrap around edges
@@ -228,7 +198,7 @@ function Visualizer({ hardwareData }) {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
       ctx.font = '20px monospace';
       ctx.fillText(`Encoder 4: ${encoders[4].value}`, 20, 30);
-      ctx.fillText(`Pattern: ${pattern}`, 20, 60);
+      ctx.fillText(`Rotation: ${rotationIntensity.toFixed(3)}`, 20, 60);
 
       animationRef.current = requestAnimationFrame(animate);
     };
