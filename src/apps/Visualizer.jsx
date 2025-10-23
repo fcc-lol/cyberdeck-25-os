@@ -39,40 +39,8 @@ function Visualizer({ hardwareData }) {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Initialize particles with colors
-    const initParticles = () => {
-      const { switches, encoders } = hardwareDataRef.current;
-      const particleCount = Math.abs(50 + encoders[1].value * 5);
-      particlesRef.current = [];
-
-      // Determine active colors
-      const activeColors = [];
-      if (switches.red.active) activeColors.push('red');
-      if (switches.green.active) activeColors.push('green');
-      if (switches.blue.active) activeColors.push('blue');
-
-      // If no colors active, don't create particles
-      if (activeColors.length === 0) return;
-
-      for (let i = 0; i < particleCount; i++) {
-        // Assign color randomly from active colors
-        const color =
-          activeColors[Math.floor(Math.random() * activeColors.length)];
-
-        particlesRef.current.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
-          size: Math.random() * 3 + 1,
-          angle: Math.random() * Math.PI * 2,
-          angleSpeed: (Math.random() - 0.5) * 0.1,
-          color: color,
-        });
-      }
-    };
-
-    initParticles();
+    // Don't initialize particles here - let the animation loop handle it
+    // This ensures we use the most up-to-date switch states
 
     // Animation loop
     const animate = () => {
