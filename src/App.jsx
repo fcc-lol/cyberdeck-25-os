@@ -14,7 +14,6 @@ const Page = styled.div`
 const Header = styled.div`
   padding: 20px;
   background: #000;
-  border-bottom: 2px solid #fff;
   font-size: 24px;
   font-weight: bold;
   text-align: center;
@@ -23,7 +22,6 @@ const Header = styled.div`
 const StatusBar = styled.div`
   padding: 10px 20px;
   background: #000;
-  border-bottom: 1px solid #fff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -50,7 +48,6 @@ const Dashboard = styled.div`
 
 const Section = styled.div`
   background: #0f0f0f;
-  border: 2px solid #fff;
   border-radius: 8px;
   padding: 20px;
 `;
@@ -60,7 +57,6 @@ const SectionTitle = styled.h2`
   color: #fff;
   font-size: 20px;
   text-transform: uppercase;
-  border-bottom: 1px solid #fff;
   padding-bottom: 10px;
 `;
 
@@ -72,7 +68,6 @@ const ComponentGrid = styled.div`
 
 const Component = styled.div`
   background: #000;
-  border: 1px solid ${(props) => (props.active ? '#fff' : '#333')};
   border-radius: 4px;
   padding: 15px;
   text-align: center;
@@ -115,17 +110,7 @@ const FullWidthSection = styled(Section)`
   grid-column: 1 / -1;
 `;
 
-const SwitchComponent = styled(Component)`
-  border: 1px solid
-    ${(props) => {
-      if (props.active) {
-        if (props.color === 'red') return '#ff0000';
-        if (props.color === 'green') return '#00ff00';
-        if (props.color === 'blue') return '#0080ff';
-      }
-      return '#333';
-    }};
-`;
+const SwitchComponent = styled(Component)``;
 
 const SwitchLabel = styled(ComponentLabel)`
   color: ${(props) => {
