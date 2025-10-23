@@ -52,7 +52,7 @@ function Visualizer({ hardwareData }) {
       const { switches, encoders } = hardwareDataRef.current;
       const density = Math.abs(50 + encoders[1].value * 5);
       const sizeMultiplier = 1 + encoders[2].value * 0.1;
-      const speedMultiplier = 1 + encoders[3].value * 0.05;
+      const speedMultiplier = Math.max(0.1, 1 + encoders[3].value * 0.05); // Minimum speed of 0.1
 
       // Use ranges for pattern switching
       const encoderValue = encoders[4].value;
