@@ -7,14 +7,14 @@ const Page = styled.div`
   flex-direction: column;
   height: 100vh;
   background: #0a0a0a;
-  color: #00ff00;
+  color: #fff;
   font-family: 'Courier New', monospace;
 `;
 
 const Header = styled.div`
   padding: 20px;
   background: #000;
-  border-bottom: 2px solid #00ff00;
+  border-bottom: 2px solid #fff;
   font-size: 24px;
   font-weight: bold;
   text-align: center;
@@ -23,14 +23,14 @@ const Header = styled.div`
 const StatusBar = styled.div`
   padding: 10px 20px;
   background: #000;
-  border-bottom: 1px solid #00ff00;
+  border-bottom: 1px solid #fff;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 
 const StatusIndicator = styled.span`
-  color: ${(props) => (props.connected ? '#00ff00' : '#ff0000')};
+  color: ${(props) => (props.connected ? '#fff' : '#666')};
   font-size: 16px;
   &::before {
     content: '●';
@@ -50,17 +50,17 @@ const Dashboard = styled.div`
 
 const Section = styled.div`
   background: #0f0f0f;
-  border: 2px solid #00ff00;
+  border: 2px solid #fff;
   border-radius: 8px;
   padding: 20px;
 `;
 
 const SectionTitle = styled.h2`
   margin: 0 0 20px 0;
-  color: #ffff00;
+  color: #fff;
   font-size: 20px;
   text-transform: uppercase;
-  border-bottom: 1px solid #00ff00;
+  border-bottom: 1px solid #fff;
   padding-bottom: 10px;
 `;
 
@@ -72,21 +72,21 @@ const ComponentGrid = styled.div`
 
 const Component = styled.div`
   background: #000;
-  border: 1px solid ${(props) => (props.active ? '#00ff00' : '#333')};
+  border: 1px solid ${(props) => (props.active ? '#fff' : '#333')};
   border-radius: 4px;
   padding: 15px;
   text-align: center;
 `;
 
 const ComponentLabel = styled.div`
-  color: #00ffff;
+  color: #aaa;
   font-size: 14px;
   margin-bottom: 10px;
   text-transform: uppercase;
 `;
 
 const ComponentValue = styled.div`
-  color: ${(props) => (props.active ? '#00ff00' : '#ff0000')};
+  color: ${(props) => (props.active ? '#fff' : '#666')};
   font-size: 32px;
   font-weight: bold;
   margin: 10px 0;
@@ -99,20 +99,52 @@ const ComponentState = styled.div`
 `;
 
 const EncoderValue = styled.div`
-  color: #00ff00;
+  color: #fff;
   font-size: 48px;
   font-weight: bold;
   margin: 10px 0;
 `;
 
 const EncoderDirection = styled.div`
-  color: #ffff00;
+  color: #aaa;
   font-size: 14px;
   margin-top: 5px;
 `;
 
 const FullWidthSection = styled(Section)`
   grid-column: 1 / -1;
+`;
+
+const SwitchComponent = styled(Component)`
+  border: 1px solid
+    ${(props) => {
+      if (props.active) {
+        if (props.color === 'red') return '#ff0000';
+        if (props.color === 'green') return '#00ff00';
+        if (props.color === 'blue') return '#0080ff';
+      }
+      return '#333';
+    }};
+`;
+
+const SwitchLabel = styled(ComponentLabel)`
+  color: ${(props) => {
+    if (props.color === 'red') return '#ff0000';
+    if (props.color === 'green') return '#00ff00';
+    if (props.color === 'blue') return '#0080ff';
+    return '#aaa';
+  }};
+`;
+
+const SwitchValue = styled(ComponentValue)`
+  color: ${(props) => {
+    if (props.active) {
+      if (props.color === 'red') return '#ff0000';
+      if (props.color === 'green') return '#00ff00';
+      if (props.color === 'blue') return '#0080ff';
+    }
+    return '#666';
+  }};
 `;
 
 function App() {
@@ -211,12 +243,12 @@ function App() {
 
   const getKeyStatus = (active) => {
     if (active === null) return 'UNKNOWN';
-    return active ? 'RELEASED' : 'PRESSED';
+    return active ? 'ACTIVE' : 'INACTIVE';
   };
 
   const getSwitchStatus = (active) => {
     if (active === null) return 'UNKNOWN';
-    return active ? 'RELEASED' : 'PRESSED';
+    return active ? 'ACTIVE' : 'INACTIVE';
   };
 
   return (
@@ -230,10 +262,10 @@ function App() {
       <Dashboard>
         <Section>
           <SectionTitle>🔘 Main Key</SectionTitle>
-          <Component active={key.active !== null && !key.active}>
+          <Component active={key.active}>
             <ComponentLabel>Status</ComponentLabel>
-            <ComponentValue active={key.active !== null && !key.active}>
-              {key.active === null ? '?' : key.active ? '○' : '●'}
+            <ComponentValue active={key.active}>
+              {key.active === null ? '?' : key.active ? '●' : '○'}
             </ComponentValue>
             <ComponentState>{getKeyStatus(key.active)}</ComponentState>
           </Component>
@@ -243,26 +275,22 @@ function App() {
           <SectionTitle>🎚️ Switches</SectionTitle>
           <ComponentGrid>
             {['red', 'green', 'blue'].map((color) => (
-              <Component
+              <SwitchComponent
                 key={color}
-                active={
-                  switches[color].active !== null && !switches[color].active
-                }>
-                <ComponentLabel>{color}</ComponentLabel>
-                <ComponentValue
-                  active={
-                    switches[color].active !== null && !switches[color].active
-                  }>
+                active={switches[color].active}
+                color={color}>
+                <SwitchLabel color={color}>{color}</SwitchLabel>
+                <SwitchValue active={switches[color].active} color={color}>
                   {switches[color].active === null
                     ? '?'
                     : switches[color].active
-                    ? '○'
-                    : '●'}
-                </ComponentValue>
+                    ? '●'
+                    : '○'}
+                </SwitchValue>
                 <ComponentState>
                   {getSwitchStatus(switches[color].active)}
                 </ComponentState>
-              </Component>
+              </SwitchComponent>
             ))}
           </ComponentGrid>
         </Section>
