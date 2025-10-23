@@ -38,12 +38,17 @@ const StatusIndicator = styled.span`
 
 const Dashboard = styled.div`
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
   padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const TopRow = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
-  align-content: start;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 15px;
 `;
 
 const Section = styled.div`
@@ -106,9 +111,7 @@ const EncoderDirection = styled.div`
   margin-top: 5px;
 `;
 
-const FullWidthSection = styled(Section)`
-  grid-column: 1 / -1;
-`;
+const EncoderSection = styled(Section)``;
 
 const SwitchComponent = styled(Component)``;
 
@@ -245,42 +248,35 @@ function App() {
         </StatusIndicator>
       </StatusBar>
       <Dashboard>
-        <Section>
-          <SectionTitle>🔘 Main Key</SectionTitle>
+        <TopRow>
+          {['red', 'green', 'blue'].map((color) => (
+            <SwitchComponent
+              key={color}
+              active={switches[color].active}
+              color={color}>
+              <SwitchLabel color={color}>{color}</SwitchLabel>
+              <SwitchValue active={switches[color].active} color={color}>
+                {switches[color].active === null
+                  ? '?'
+                  : switches[color].active
+                  ? '●'
+                  : '○'}
+              </SwitchValue>
+              <ComponentState>
+                {getSwitchStatus(switches[color].active)}
+              </ComponentState>
+            </SwitchComponent>
+          ))}
           <Component active={key.active}>
-            <ComponentLabel>Status</ComponentLabel>
+            <ComponentLabel>Key</ComponentLabel>
             <ComponentValue active={key.active}>
               {key.active === null ? '?' : key.active ? '●' : '○'}
             </ComponentValue>
             <ComponentState>{getKeyStatus(key.active)}</ComponentState>
           </Component>
-        </Section>
+        </TopRow>
 
-        <Section>
-          <SectionTitle>🎚️ Switches</SectionTitle>
-          <ComponentGrid>
-            {['red', 'green', 'blue'].map((color) => (
-              <SwitchComponent
-                key={color}
-                active={switches[color].active}
-                color={color}>
-                <SwitchLabel color={color}>{color}</SwitchLabel>
-                <SwitchValue active={switches[color].active} color={color}>
-                  {switches[color].active === null
-                    ? '?'
-                    : switches[color].active
-                    ? '●'
-                    : '○'}
-                </SwitchValue>
-                <ComponentState>
-                  {getSwitchStatus(switches[color].active)}
-                </ComponentState>
-              </SwitchComponent>
-            ))}
-          </ComponentGrid>
-        </Section>
-
-        <FullWidthSection>
+        <EncoderSection>
           <SectionTitle>🎛️ Rotary Encoders</SectionTitle>
           <ComponentGrid>
             {[1, 2, 3, 4].map((id) => (
@@ -297,7 +293,7 @@ function App() {
               </Component>
             ))}
           </ComponentGrid>
-        </FullWidthSection>
+        </EncoderSection>
       </Dashboard>
     </Page>
   );
