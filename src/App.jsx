@@ -7,6 +7,11 @@ const Screen = styled.div`
   height: 100vh;
   width: 100vw;
   background: #000000;
+  cursor: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 function App() {
