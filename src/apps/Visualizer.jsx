@@ -34,15 +34,25 @@ function Visualizer({ hardwareData }) {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Initialize particles
+    // Initialize particles with colors
     const initParticles = () => {
-      const particleCount = Math.max(
-        20,
-        Math.min(200, 50 + encoders[1].value * 5),
-      );
+      const particleCount = Math.abs(50 + encoders[1].value * 5);
       particlesRef.current = [];
 
+      // Determine active colors
+      const activeColors = [];
+      if (switches.red.active) activeColors.push('red');
+      if (switches.green.active) activeColors.push('green');
+      if (switches.blue.active) activeColors.push('blue');
+
+      // If no colors active, don't create particles
+      if (activeColors.length === 0) return;
+
       for (let i = 0; i < particleCount; i++) {
+        // Assign color randomly from active colors
+        const color =
+          activeColors[Math.floor(Math.random() * activeColors.length)];
+
         particlesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -51,6 +61,7 @@ function Visualizer({ hardwareData }) {
           size: Math.random() * 3 + 1,
           angle: Math.random() * Math.PI * 2,
           angleSpeed: (Math.random() - 0.5) * 0.1,
+          color: color,
         });
       }
     };
@@ -64,19 +75,26 @@ function Visualizer({ hardwareData }) {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Get current values from encoders
-      const density = Math.max(20, Math.min(200, 50 + encoders[1].value * 5));
-      const sizeMultiplier = Math.max(
-        0.5,
-        Math.min(5, 1 + encoders[2].value * 0.1),
+      const density = Math.abs(50 + encoders[1].value * 5);
+      const sizeMultiplier = 1 + encoders[2].value * 0.1;
+      const speedMultiplier = 1 + encoders[3].value * 0.05;
+      const pattern = Math.abs(encoders[4].value) % 4; // 4 different patterns
+
+      // Determine active colors
+      const activeColors = [];
+      if (switches.red.active) activeColors.push('red');
+      if (switches.green.active) activeColors.push('green');
+      if (switches.blue.active) activeColors.push('blue');
+
+      // Remove particles that don't match active colors
+      particlesRef.current = particlesRef.current.filter((particle) =>
+        activeColors.includes(particle.color),
       );
-      const speedMultiplier = Math.max(
-        0.1,
-        Math.min(3, 1 + encoders[3].value * 0.05),
-      );
-      const pattern = encoders[4].value % 4; // 4 different patterns
 
       // Adjust particle count if needed
-      while (particlesRef.current.length < density) {
+      while (particlesRef.current.length < density && activeColors.length > 0) {
+        const color =
+          activeColors[Math.floor(Math.random() * activeColors.length)];
         particlesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -85,6 +103,7 @@ function Visualizer({ hardwareData }) {
           size: Math.random() * 3 + 1,
           angle: Math.random() * Math.PI * 2,
           angleSpeed: (Math.random() - 0.5) * 0.1,
+          color: color,
         });
       }
       while (particlesRef.current.length > density) {
@@ -133,25 +152,30 @@ function Visualizer({ hardwareData }) {
         if (particle.y < 0) particle.y = canvas.height;
         if (particle.y > canvas.height) particle.y = 0;
 
-        // Build color based on active switches
-        const colors = [];
-        if (switches.red.active) colors.push(255);
-        else colors.push(0);
-
-        if (switches.green.active) colors.push(255);
-        else colors.push(0);
-
-        if (switches.blue.active) colors.push(255);
-        else colors.push(0);
+        // Get particle color
+        let colorRGB;
+        switch (particle.color) {
+          case 'red':
+            colorRGB = [255, 0, 0];
+            break;
+          case 'green':
+            colorRGB = [0, 255, 0];
+            break;
+          case 'blue':
+            colorRGB = [0, 128, 255];
+            break;
+          default:
+            colorRGB = [255, 255, 255];
+        }
 
         // Draw particle
         const size = particle.size * sizeMultiplier;
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${colors[0]}, ${colors[1]}, ${colors[2]}, 0.8)`;
+        ctx.fillStyle = `rgba(${colorRGB[0]}, ${colorRGB[1]}, ${colorRGB[2]}, 0.8)`;
         ctx.fill();
 
-        // Draw connecting lines to nearby particles
+        // Draw connecting lines to nearby particles of the same color
         if (index < particlesRef.current.length - 1) {
           for (
             let j = index + 1;
@@ -159,19 +183,23 @@ function Visualizer({ hardwareData }) {
             j++
           ) {
             const other = particlesRef.current[j];
-            const dx = particle.x - other.x;
-            const dy = particle.y - other.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance < 100) {
-              ctx.beginPath();
-              ctx.moveTo(particle.x, particle.y);
-              ctx.lineTo(other.x, other.y);
-              ctx.strokeStyle = `rgba(${colors[0]}, ${colors[1]}, ${
-                colors[2]
-              }, ${0.2 * (1 - distance / 100)})`;
-              ctx.lineWidth = 0.5;
-              ctx.stroke();
+            // Only connect particles of the same color
+            if (particle.color === other.color) {
+              const dx = particle.x - other.x;
+              const dy = particle.y - other.y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+
+              if (distance < 100) {
+                ctx.beginPath();
+                ctx.moveTo(particle.x, particle.y);
+                ctx.lineTo(other.x, other.y);
+                ctx.strokeStyle = `rgba(${colorRGB[0]}, ${colorRGB[1]}, ${
+                  colorRGB[2]
+                }, ${0.2 * (1 - distance / 100)})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+              }
             }
           }
         }
