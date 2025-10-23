@@ -53,7 +53,14 @@ function Visualizer({ hardwareData }) {
       const density = Math.abs(50 + encoders[1].value * 5);
       const sizeMultiplier = 1 + encoders[2].value * 0.1;
       const speedMultiplier = 1 + encoders[3].value * 0.05;
-      const pattern = Math.abs(encoders[4].value) % 4; // 4 different patterns
+
+      // Use ranges for smoother pattern switching
+      const encoderValue = encoders[4].value;
+      let pattern;
+      if (encoderValue < -25) pattern = 0;
+      else if (encoderValue < 0) pattern = 1;
+      else if (encoderValue < 25) pattern = 2;
+      else pattern = 3;
 
       // Determine active colors
       const activeColors = [];
@@ -150,7 +157,7 @@ function Visualizer({ hardwareData }) {
         ctx.fillStyle = `rgba(${colorRGB[0]}, ${colorRGB[1]}, ${colorRGB[2]}, 0.8)`;
         ctx.fill();
 
-        // Draw connecting lines to nearby particles of the same color
+        // Draw connecting lines to nearby particles
         if (index < particlesRef.current.length - 1) {
           for (
             let j = index + 1;
@@ -158,23 +165,19 @@ function Visualizer({ hardwareData }) {
             j++
           ) {
             const other = particlesRef.current[j];
+            const dx = particle.x - other.x;
+            const dy = particle.y - other.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
 
-            // Only connect particles of the same color
-            if (particle.color === other.color) {
-              const dx = particle.x - other.x;
-              const dy = particle.y - other.y;
-              const distance = Math.sqrt(dx * dx + dy * dy);
-
-              if (distance < 100) {
-                ctx.beginPath();
-                ctx.moveTo(particle.x, particle.y);
-                ctx.lineTo(other.x, other.y);
-                ctx.strokeStyle = `rgba(${colorRGB[0]}, ${colorRGB[1]}, ${
-                  colorRGB[2]
-                }, ${0.2 * (1 - distance / 100)})`;
-                ctx.lineWidth = 0.5;
-                ctx.stroke();
-              }
+            if (distance < 100) {
+              ctx.beginPath();
+              ctx.moveTo(particle.x, particle.y);
+              ctx.lineTo(other.x, other.y);
+              ctx.strokeStyle = `rgba(${colorRGB[0]}, ${colorRGB[1]}, ${
+                colorRGB[2]
+              }, ${0.2 * (1 - distance / 100)})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
             }
           }
         }
