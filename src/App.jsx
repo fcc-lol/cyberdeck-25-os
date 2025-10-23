@@ -4,8 +4,8 @@ import { useHardwareData } from './hooks/useHardwareData';
 import Visualizer from './apps/Visualizer';
 
 const Screen = styled.div`
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   background: #000000;
   cursor: none;
   user-select: none;

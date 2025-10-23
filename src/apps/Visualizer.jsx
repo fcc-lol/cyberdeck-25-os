@@ -15,10 +15,15 @@ const Canvas = styled.canvas`
 `;
 
 function Visualizer({ hardwareData }) {
-  const { switches, encoders } = hardwareData;
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   const particlesRef = useRef([]);
+  const hardwareDataRef = useRef(hardwareData);
+
+  // Keep hardware data ref updated
+  useEffect(() => {
+    hardwareDataRef.current = hardwareData;
+  }, [hardwareData]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -36,6 +41,7 @@ function Visualizer({ hardwareData }) {
 
     // Initialize particles with colors
     const initParticles = () => {
+      const { switches, encoders } = hardwareDataRef.current;
       const particleCount = Math.abs(50 + encoders[1].value * 5);
       particlesRef.current = [];
 
@@ -74,7 +80,8 @@ function Visualizer({ hardwareData }) {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Get current values from encoders
+      // Get current values from hardware data ref
+      const { switches, encoders } = hardwareDataRef.current;
       const density = Math.abs(50 + encoders[1].value * 5);
       const sizeMultiplier = 1 + encoders[2].value * 0.1;
       const speedMultiplier = 1 + encoders[3].value * 0.05;
@@ -216,7 +223,7 @@ function Visualizer({ hardwareData }) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [switches, encoders]);
+  }, []); // Empty deps - animation loop only initializes once
 
   return (
     <Container>
