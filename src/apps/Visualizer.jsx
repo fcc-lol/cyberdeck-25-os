@@ -50,10 +50,10 @@ function Visualizer({ hardwareData }) {
 
       // Get current values from hardware data ref
       const { switches, encoders } = hardwareDataRef.current;
-      const density = Math.abs(50 + encoders[1].value * 5);
-      const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.1); // Minimum size of 0.3 (30%)
-      const speedMultiplier = Math.max(0.5, 1 + encoders[3].value * 0.05); // Minimum speed of 0.5 (50%)
-      const rotationIntensity = encoders[4].value * 0.001; // Rotation/spiral effect
+      const density = Math.abs(50 + encoders[1].value * 10); // More sensitive: 10 particles per increment
+      const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.2); // More sensitive: 20% per increment
+      const speedMultiplier = Math.max(0.5, 1 + encoders[3].value * 0.1); // More sensitive: 10% per increment
+      const rotationIntensity = encoders[4].value * 0.003; // More sensitive: 3x rotation effect
 
       // Determine active colors
       const activeColors = [];
@@ -195,10 +195,16 @@ function Visualizer({ hardwareData }) {
       });
 
       // Draw debug info
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.font = '20px monospace';
-      ctx.fillText(`Encoder 4: ${encoders[4].value}`, 20, 30);
-      ctx.fillText(`Rotation: ${rotationIntensity.toFixed(3)}`, 20, 60);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(10, 10, 320, 180);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.font = '16px monospace';
+      ctx.fillText(`E1: ${encoders[1].value.toString().padStart(4)} → Density: ${Math.floor(density)}`, 20, 30);
+      ctx.fillText(`E2: ${encoders[2].value.toString().padStart(4)} → Size: ${sizeMultiplier.toFixed(2)}x`, 20, 55);
+      ctx.fillText(`E3: ${encoders[3].value.toString().padStart(4)} → Speed: ${speedMultiplier.toFixed(2)}x`, 20, 80);
+      ctx.fillText(`E4: ${encoders[4].value.toString().padStart(4)} → Rotation: ${rotationIntensity.toFixed(3)}`, 20, 105);
+      ctx.fillText(`Particles: ${particlesRef.current.length}`, 20, 140);
+      ctx.fillText(`Colors: ${activeColors.join(', ') || 'none'}`, 20, 165);
 
       animationRef.current = requestAnimationFrame(animate);
     };
