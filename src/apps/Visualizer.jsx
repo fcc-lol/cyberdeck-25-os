@@ -19,11 +19,31 @@ function Visualizer({ hardwareData }) {
   const animationRef = useRef(null);
   const particlesRef = useRef([]);
   const hardwareDataRef = useRef(hardwareData);
+  const [showDebug, setShowDebug] = React.useState(true);
+  const showDebugRef = useRef(showDebug);
 
   // Keep hardware data ref updated
   useEffect(() => {
     hardwareDataRef.current = hardwareData;
   }, [hardwareData]);
+
+  // Keep showDebug ref updated
+  useEffect(() => {
+    showDebugRef.current = showDebug;
+  }, [showDebug]);
+
+  // Toggle debug view with spacebar
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setShowDebug((prev) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -198,71 +218,74 @@ function Visualizer({ hardwareData }) {
         }
       });
 
-      // Draw debug info with contrast based on background
-      if (key.active === true) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(10, 10, 420, 280);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      } else {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(10, 10, 420, 280);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      }
-      ctx.font = '16px monospace';
+      // Draw debug info if enabled
+      if (showDebugRef.current) {
+        // Draw debug background
+        if (key.active === true) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(10, 10, 420, 280);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        } else {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(10, 10, 420, 280);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        }
+        ctx.font = '16px monospace';
 
-      // Hardware inputs
-      ctx.fillText(
-        `KEY: ${key.active === true ? 'ACTIVE' : 'INACTIVE'}`,
-        20,
-        35,
-      );
-      ctx.fillText(`─────────────────────────────`, 20, 50);
-      ctx.fillText(
-        `E1: ${encoders[1].value
-          .toString()
-          .padStart(4)} → Density: ${Math.floor(density)}`,
-        20,
-        75,
-      );
-      ctx.fillText(
-        `E2: ${encoders[2].value
-          .toString()
-          .padStart(4)} → Size: ${sizeMultiplier.toFixed(2)}x`,
-        20,
-        100,
-      );
-      ctx.fillText(
-        `E3: ${encoders[3].value
-          .toString()
-          .padStart(4)} → Speed: ${speedMultiplier.toFixed(2)}x`,
-        20,
-        125,
-      );
-      ctx.fillText(
-        `E4: ${encoders[4].value
-          .toString()
-          .padStart(4)} → Spiral: ${spiralIntensity.toFixed(3)}`,
-        20,
-        150,
-      );
-      ctx.fillText(`─────────────────────────────`, 20, 165);
-      ctx.fillText(
-        `RED:   ${switches.red.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
-        20,
-        190,
-      );
-      ctx.fillText(
-        `GREEN: ${switches.green.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
-        20,
-        215,
-      );
-      ctx.fillText(
-        `BLUE:  ${switches.blue.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
-        20,
-        240,
-      );
-      ctx.fillText(`─────────────────────────────`, 20, 255);
-      ctx.fillText(`Particles: ${particlesRef.current.length}`, 20, 280);
+        // Hardware inputs
+        ctx.fillText(
+          `KEY: ${key.active === true ? 'ACTIVE' : 'INACTIVE'}`,
+          20,
+          35,
+        );
+        ctx.fillText(`─────────────────────────────`, 20, 50);
+        ctx.fillText(
+          `E1: ${encoders[1].value
+            .toString()
+            .padStart(4)} → Density: ${Math.floor(density)}`,
+          20,
+          75,
+        );
+        ctx.fillText(
+          `E2: ${encoders[2].value
+            .toString()
+            .padStart(4)} → Size: ${sizeMultiplier.toFixed(2)}x`,
+          20,
+          100,
+        );
+        ctx.fillText(
+          `E3: ${encoders[3].value
+            .toString()
+            .padStart(4)} → Speed: ${speedMultiplier.toFixed(2)}x`,
+          20,
+          125,
+        );
+        ctx.fillText(
+          `E4: ${encoders[4].value
+            .toString()
+            .padStart(4)} → Spiral: ${spiralIntensity.toFixed(3)}`,
+          20,
+          150,
+        );
+        ctx.fillText(`─────────────────────────────`, 20, 165);
+        ctx.fillText(
+          `RED:   ${switches.red.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
+          20,
+          190,
+        );
+        ctx.fillText(
+          `GREEN: ${switches.green.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
+          20,
+          215,
+        );
+        ctx.fillText(
+          `BLUE:  ${switches.blue.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
+          20,
+          240,
+        );
+        ctx.fillText(`─────────────────────────────`, 20, 255);
+        ctx.fillText(`Particles: ${particlesRef.current.length}`, 20, 280);
+      }
 
       animationRef.current = requestAnimationFrame(animate);
     };
