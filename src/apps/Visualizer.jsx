@@ -224,6 +224,12 @@ function Visualizer({ hardwareData }) {
         }
       });
 
+      // Draw debug info
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.font = '20px monospace';
+      ctx.fillText(`Encoder 4: ${encoders[4].value}`, 20, 30);
+      ctx.fillText(`Pattern: ${pattern}`, 20, 60);
+
       animationRef.current = requestAnimationFrame(animate);
     };
 
