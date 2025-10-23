@@ -51,8 +51,8 @@ function Visualizer({ hardwareData }) {
       // Get current values from hardware data ref
       const { switches, encoders } = hardwareDataRef.current;
       const density = Math.abs(50 + encoders[1].value * 5);
-      const sizeMultiplier = 1 + encoders[2].value * 0.1;
-      const speedMultiplier = Math.max(0.1, 1 + encoders[3].value * 0.05); // Minimum speed of 0.1
+      const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.1); // Minimum size of 0.3 (30%)
+      const speedMultiplier = Math.max(0.5, 1 + encoders[3].value * 0.05); // Minimum speed of 0.5 (50%)
 
       // Use ranges for pattern switching
       const encoderValue = encoders[4].value;
@@ -73,11 +73,6 @@ function Visualizer({ hardwareData }) {
       if (activeColors.length === 0) {
         particlesRef.current = [];
       } else {
-        // Remove particles that don't match active colors
-        particlesRef.current = particlesRef.current.filter((particle) =>
-          activeColors.includes(particle.color),
-        );
-
         // Check which active colors are missing from current particles
         const existingColors = new Set(
           particlesRef.current.map((p) => p.color),
@@ -86,21 +81,30 @@ function Visualizer({ hardwareData }) {
           (color) => !existingColors.has(color),
         );
 
-        // If we have missing colors, replace some particles or add new ones
+        // Convert some existing particles to missing colors BEFORE filtering
         if (missingColors.length > 0 && particlesRef.current.length > 0) {
-          const particlesToConvert = Math.min(
-            Math.ceil(particlesRef.current.length / activeColors.length),
-            particlesRef.current.length,
+          const particlesToConvert = Math.ceil(
+            particlesRef.current.length / activeColors.length,
           );
+          let convertIndex = 0;
           for (
             let i = 0;
             i < particlesToConvert && missingColors.length > 0;
             i++
           ) {
             const colorIndex = i % missingColors.length;
-            particlesRef.current[i].color = missingColors[colorIndex];
+            if (convertIndex < particlesRef.current.length) {
+              particlesRef.current[convertIndex].color =
+                missingColors[colorIndex];
+              convertIndex++;
+            }
           }
         }
+
+        // Remove particles that don't match active colors
+        particlesRef.current = particlesRef.current.filter((particle) =>
+          activeColors.includes(particle.color),
+        );
 
         // Adjust particle count if needed
         while (particlesRef.current.length < density) {
@@ -126,18 +130,23 @@ function Visualizer({ hardwareData }) {
       particlesRef.current.forEach((particle, index) => {
         // Update position based on pattern
         switch (pattern) {
-          case 0: // Circular motion
-            particle.angle += particle.angleSpeed * speedMultiplier;
-            particle.x += Math.cos(particle.angle) * speedMultiplier;
-            particle.y += Math.sin(particle.angle) * speedMultiplier;
+          case 0: // Circular motion - orbit around center
+            const centerX0 = canvas.width / 2;
+            const centerY0 = canvas.height / 2;
+            particle.angle += 0.02 * speedMultiplier;
+            const radius0 = 200 + particle.size * 20;
+            particle.x = centerX0 + Math.cos(particle.angle) * radius0;
+            particle.y = centerY0 + Math.sin(particle.angle) * radius0;
             break;
-          case 1: // Wave motion
+          case 1: // Wave motion - horizontal waves
             particle.x += particle.vx * speedMultiplier;
+            const waveOffset = (particle.size / 5) * Math.PI * 2;
             particle.y =
               canvas.height / 2 +
-              Math.sin(particle.x * 0.01 + Date.now() * 0.001) * 100;
+              Math.sin(particle.x * 0.01 + Date.now() * 0.003 + waveOffset) *
+                200;
             break;
-          case 2: // Spiral
+          case 2: // Spiral - rotate around center
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const distance = Math.sqrt(
@@ -149,13 +158,15 @@ function Visualizer({ hardwareData }) {
               particle.x - centerX,
             );
             particle.x =
-              centerX + Math.cos(angle + 0.02 * speedMultiplier) * distance;
+              centerX +
+              Math.cos(angle + 0.05 * speedMultiplier) * (distance + 0.5);
             particle.y =
-              centerY + Math.sin(angle + 0.02 * speedMultiplier) * distance;
+              centerY +
+              Math.sin(angle + 0.05 * speedMultiplier) * (distance + 0.5);
             break;
-          default: // Random motion
-            particle.x += particle.vx * speedMultiplier;
-            particle.y += particle.vy * speedMultiplier;
+          default: // Random motion - chaotic movement
+            particle.x += particle.vx * speedMultiplier * 2;
+            particle.y += particle.vy * speedMultiplier * 2;
         }
 
         // Wrap around edges
