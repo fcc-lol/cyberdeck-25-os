@@ -19,11 +19,27 @@ function Visualizer({ hardwareData }) {
   const animationRef = useRef(null);
   const particlesRef = useRef([]);
   const hardwareDataRef = useRef(hardwareData);
+  const backgroundRef = useRef('#000000'); // Start with black
+  const lastKeyStateRef = useRef(null);
 
   // Keep hardware data ref updated
   useEffect(() => {
     hardwareDataRef.current = hardwareData;
   }, [hardwareData]);
+
+  // Detect key presses to toggle background
+  useEffect(() => {
+    const currentKeyState = hardwareData.key.active;
+
+    // Detect key press (transition from active/true to inactive/false)
+    if (lastKeyStateRef.current === true && currentKeyState === false) {
+      // Toggle background
+      backgroundRef.current =
+        backgroundRef.current === '#000000' ? '#ffffff' : '#000000';
+    }
+
+    lastKeyStateRef.current = currentKeyState;
+  }, [hardwareData.key.active]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -44,8 +60,13 @@ function Visualizer({ hardwareData }) {
 
     // Animation loop
     const animate = () => {
-      // Clear canvas
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      // Clear canvas with current background color
+      const currentBg = backgroundRef.current;
+      if (currentBg === '#000000') {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      } else {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Get current values from hardware data ref
@@ -194,17 +215,55 @@ function Visualizer({ hardwareData }) {
         }
       });
 
-      // Draw debug info
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.fillRect(10, 10, 320, 180);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      // Draw debug info with inverted colors for readability
+      const debugBg = backgroundRef.current;
+      if (debugBg === '#000000') {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(10, 10, 400, 205);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      } else {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fillRect(10, 10, 400, 205);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+      }
       ctx.font = '16px monospace';
-      ctx.fillText(`E1: ${encoders[1].value.toString().padStart(4)} → Density: ${Math.floor(density)}`, 20, 30);
-      ctx.fillText(`E2: ${encoders[2].value.toString().padStart(4)} → Size: ${sizeMultiplier.toFixed(2)}x`, 20, 55);
-      ctx.fillText(`E3: ${encoders[3].value.toString().padStart(4)} → Speed: ${speedMultiplier.toFixed(2)}x`, 20, 80);
-      ctx.fillText(`E4: ${encoders[4].value.toString().padStart(4)} → Rotation: ${rotationIntensity.toFixed(3)}`, 20, 105);
+      ctx.fillText(
+        `E1: ${encoders[1].value
+          .toString()
+          .padStart(4)} → Density: ${Math.floor(density)}`,
+        20,
+        30,
+      );
+      ctx.fillText(
+        `E2: ${encoders[2].value
+          .toString()
+          .padStart(4)} → Size: ${sizeMultiplier.toFixed(2)}x`,
+        20,
+        55,
+      );
+      ctx.fillText(
+        `E3: ${encoders[3].value
+          .toString()
+          .padStart(4)} → Speed: ${speedMultiplier.toFixed(2)}x`,
+        20,
+        80,
+      );
+      ctx.fillText(
+        `E4: ${encoders[4].value
+          .toString()
+          .padStart(4)} → Rotation: ${rotationIntensity.toFixed(3)}`,
+        20,
+        105,
+      );
       ctx.fillText(`Particles: ${particlesRef.current.length}`, 20, 140);
       ctx.fillText(`Colors: ${activeColors.join(', ') || 'none'}`, 20, 165);
+      ctx.fillText(
+        `Background: ${
+          debugBg === '#000000' ? 'Black' : 'White'
+        } (Key to toggle)`,
+        20,
+        190,
+      );
 
       animationRef.current = requestAnimationFrame(animate);
     };
