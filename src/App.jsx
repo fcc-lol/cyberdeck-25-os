@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useHardwareData } from './hooks/useHardwareData';
-import Debug from './apps/Debug';
+import Visualizer from './apps/Visualizer';
 
 const Page = styled.div`
   display: flex;
@@ -48,7 +48,7 @@ function App() {
           {hardwareData.connected ? 'SYSTEM ONLINE' : 'SYSTEM OFFLINE'}
         </StatusIndicator>
       </StatusBar>
-      <Debug hardwareData={hardwareData} />
+      <Visualizer hardwareData={hardwareData} />
     </Page>
   );
 }
