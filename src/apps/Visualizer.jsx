@@ -54,42 +54,48 @@ function Visualizer({ hardwareData }) {
       const sizeMultiplier = 1 + encoders[2].value * 0.1;
       const speedMultiplier = 1 + encoders[3].value * 0.05;
 
-      // Use ranges for smoother pattern switching
+      // Use ranges for pattern switching
       const encoderValue = encoders[4].value;
       let pattern;
-      if (encoderValue < -25) pattern = 0;
-      else if (encoderValue < 0) pattern = 1;
-      else if (encoderValue < 25) pattern = 2;
-      else pattern = 3;
+      if (encoderValue < -10) pattern = 0; // Circular motion
+      else if (encoderValue < -3) pattern = 1; // Wave motion
+      else if (encoderValue < 3) pattern = 2; // Spiral
+      else if (encoderValue < 10) pattern = 3; // Random motion
+      else pattern = Math.floor((encoderValue / 5) % 4); // Cycle through patterns for larger values
 
       // Determine active colors
       const activeColors = [];
-      if (switches.red.active) activeColors.push('red');
-      if (switches.green.active) activeColors.push('green');
-      if (switches.blue.active) activeColors.push('blue');
+      if (switches.red.active === true) activeColors.push('red');
+      if (switches.green.active === true) activeColors.push('green');
+      if (switches.blue.active === true) activeColors.push('blue');
 
-      // Remove particles that don't match active colors
-      particlesRef.current = particlesRef.current.filter((particle) =>
-        activeColors.includes(particle.color),
-      );
+      // If no colors active, clear all particles
+      if (activeColors.length === 0) {
+        particlesRef.current = [];
+      } else {
+        // Remove particles that don't match active colors
+        particlesRef.current = particlesRef.current.filter((particle) =>
+          activeColors.includes(particle.color),
+        );
 
-      // Adjust particle count if needed
-      while (particlesRef.current.length < density && activeColors.length > 0) {
-        const color =
-          activeColors[Math.floor(Math.random() * activeColors.length)];
-        particlesRef.current.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
-          size: Math.random() * 3 + 1,
-          angle: Math.random() * Math.PI * 2,
-          angleSpeed: (Math.random() - 0.5) * 0.1,
-          color: color,
-        });
-      }
-      while (particlesRef.current.length > density) {
-        particlesRef.current.pop();
+        // Adjust particle count if needed
+        while (particlesRef.current.length < density) {
+          const color =
+            activeColors[Math.floor(Math.random() * activeColors.length)];
+          particlesRef.current.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: Math.random() * 3 + 1,
+            angle: Math.random() * Math.PI * 2,
+            angleSpeed: (Math.random() - 0.5) * 0.1,
+            color: color,
+          });
+        }
+        while (particlesRef.current.length > density) {
+          particlesRef.current.pop();
+        }
       }
 
       // Update and draw particles
