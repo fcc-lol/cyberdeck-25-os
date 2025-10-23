@@ -19,27 +19,11 @@ function Visualizer({ hardwareData }) {
   const animationRef = useRef(null);
   const particlesRef = useRef([]);
   const hardwareDataRef = useRef(hardwareData);
-  const backgroundRef = useRef('#000000'); // Start with black
-  const lastKeyStateRef = useRef(null);
 
   // Keep hardware data ref updated
   useEffect(() => {
     hardwareDataRef.current = hardwareData;
   }, [hardwareData]);
-
-  // Detect key presses to toggle background
-  useEffect(() => {
-    const currentKeyState = hardwareData.key.active;
-
-    // Detect key press (transition from active/true to inactive/false)
-    if (lastKeyStateRef.current === true && currentKeyState === false) {
-      // Toggle background
-      backgroundRef.current =
-        backgroundRef.current === '#000000' ? '#ffffff' : '#000000';
-    }
-
-    lastKeyStateRef.current = currentKeyState;
-  }, [hardwareData.key.active]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -60,21 +44,20 @@ function Visualizer({ hardwareData }) {
 
     // Animation loop
     const animate = () => {
-      // Clear canvas with current background color
-      const currentBg = backgroundRef.current;
-      if (currentBg === '#000000') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      // Get current values from hardware data ref
+      const { switches, encoders, key } = hardwareDataRef.current;
+
+      // Clear canvas with background based on key state
+      if (key.active === true) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'; // White background
       } else {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Black background
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Get current values from hardware data ref
-      const { switches, encoders } = hardwareDataRef.current;
-      const density = Math.abs(50 + encoders[1].value * 10); // More sensitive: 10 particles per increment
-      const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.2); // More sensitive: 20% per increment
-      const speedMultiplier = Math.max(0.5, 1 + encoders[3].value * 0.1); // More sensitive: 10% per increment
-      const rotationIntensity = encoders[4].value * 0.003; // More sensitive: 3x rotation effect
+      const density = Math.abs(50 + encoders[1].value * 5);
+      const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.1); // Minimum size of 0.3 (30%)
+      const speedMultiplier = Math.max(0.5, 1 + encoders[3].value * 0.05); // Minimum speed of 0.5 (50%)
+      const spiralIntensity = encoders[4].value * 0.001; // Spiral/rotation effect
 
       // Determine active colors
       const activeColors = [];
@@ -145,8 +128,8 @@ function Visualizer({ hardwareData }) {
         particle.x += particle.vx * speedMultiplier;
         particle.y += particle.vy * speedMultiplier;
 
-        // Apply rotation/spiral effect based on encoder 4
-        if (rotationIntensity !== 0) {
+        // Apply spiral effect if encoder 4 is turned
+        if (spiralIntensity !== 0) {
           const centerX = canvas.width / 2;
           const centerY = canvas.height / 2;
           const dx = particle.x - centerX;
@@ -155,7 +138,7 @@ function Visualizer({ hardwareData }) {
           const angle = Math.atan2(dy, dx);
 
           // Rotate around center
-          const newAngle = angle + rotationIntensity;
+          const newAngle = angle + spiralIntensity;
           particle.x = centerX + Math.cos(newAngle) * distance;
           particle.y = centerY + Math.sin(newAngle) * distance;
         }
@@ -215,55 +198,71 @@ function Visualizer({ hardwareData }) {
         }
       });
 
-      // Draw debug info with inverted colors for readability
-      const debugBg = backgroundRef.current;
-      if (debugBg === '#000000') {
+      // Draw debug info with contrast based on background
+      if (key.active === true) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(10, 10, 400, 205);
+        ctx.fillRect(10, 10, 420, 280);
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
       } else {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.fillRect(10, 10, 400, 205);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(10, 10, 420, 280);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
       }
       ctx.font = '16px monospace';
+
+      // Hardware inputs
+      ctx.fillText(
+        `KEY: ${key.active === true ? 'ACTIVE' : 'INACTIVE'}`,
+        20,
+        35,
+      );
+      ctx.fillText(`─────────────────────────────`, 20, 50);
       ctx.fillText(
         `E1: ${encoders[1].value
           .toString()
           .padStart(4)} → Density: ${Math.floor(density)}`,
         20,
-        30,
+        75,
       );
       ctx.fillText(
         `E2: ${encoders[2].value
           .toString()
           .padStart(4)} → Size: ${sizeMultiplier.toFixed(2)}x`,
         20,
-        55,
+        100,
       );
       ctx.fillText(
         `E3: ${encoders[3].value
           .toString()
           .padStart(4)} → Speed: ${speedMultiplier.toFixed(2)}x`,
         20,
-        80,
+        125,
       );
       ctx.fillText(
         `E4: ${encoders[4].value
           .toString()
-          .padStart(4)} → Rotation: ${rotationIntensity.toFixed(3)}`,
+          .padStart(4)} → Spiral: ${spiralIntensity.toFixed(3)}`,
         20,
-        105,
+        150,
       );
-      ctx.fillText(`Particles: ${particlesRef.current.length}`, 20, 140);
-      ctx.fillText(`Colors: ${activeColors.join(', ') || 'none'}`, 20, 165);
+      ctx.fillText(`─────────────────────────────`, 20, 165);
       ctx.fillText(
-        `Background: ${
-          debugBg === '#000000' ? 'Black' : 'White'
-        } (Key to toggle)`,
+        `RED:   ${switches.red.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
         20,
         190,
       );
+      ctx.fillText(
+        `GREEN: ${switches.green.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
+        20,
+        215,
+      );
+      ctx.fillText(
+        `BLUE:  ${switches.blue.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
+        20,
+        240,
+      );
+      ctx.fillText(`─────────────────────────────`, 20, 255);
+      ctx.fillText(`Particles: ${particlesRef.current.length}`, 20, 280);
 
       animationRef.current = requestAnimationFrame(animate);
     };
