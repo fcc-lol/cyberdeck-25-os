@@ -57,14 +57,6 @@ const Section = styled.div`
   padding: 20px;
 `;
 
-const SectionTitle = styled.h2`
-  margin: 0 0 20px 0;
-  color: #fff;
-  font-size: 20px;
-  text-transform: uppercase;
-  padding-bottom: 10px;
-`;
-
 const ComponentGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -277,7 +269,6 @@ function App() {
         </TopRow>
 
         <EncoderSection>
-          <SectionTitle>🎛️ Rotary Encoders</SectionTitle>
           <ComponentGrid>
             {[1, 2, 3, 4].map((id) => (
               <Component key={id} active={true}>
