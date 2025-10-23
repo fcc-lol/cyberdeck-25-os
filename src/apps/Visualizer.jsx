@@ -78,6 +78,30 @@ function Visualizer({ hardwareData }) {
           activeColors.includes(particle.color),
         );
 
+        // Check which active colors are missing from current particles
+        const existingColors = new Set(
+          particlesRef.current.map((p) => p.color),
+        );
+        const missingColors = activeColors.filter(
+          (color) => !existingColors.has(color),
+        );
+
+        // If we have missing colors, replace some particles or add new ones
+        if (missingColors.length > 0 && particlesRef.current.length > 0) {
+          const particlesToConvert = Math.min(
+            Math.ceil(particlesRef.current.length / activeColors.length),
+            particlesRef.current.length,
+          );
+          for (
+            let i = 0;
+            i < particlesToConvert && missingColors.length > 0;
+            i++
+          ) {
+            const colorIndex = i % missingColors.length;
+            particlesRef.current[i].color = missingColors[colorIndex];
+          }
+        }
+
         // Adjust particle count if needed
         while (particlesRef.current.length < density) {
           const color =
