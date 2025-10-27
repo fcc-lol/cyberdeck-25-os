@@ -76,8 +76,8 @@ function Visualizer({ hardwareData }) {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       const density = Math.abs(50 + encoders[1].value * 5);
       const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.1); // Minimum size of 0.3 (30%)
-      const speedMultiplier = Math.max(0.5, 1 + encoders[3].value * 0.05); // Minimum speed of 0.5 (50%)
-      const spiralIntensity = encoders[4].value * 0.001; // Spiral/rotation effect
+      const speedMultiplier = encoders[3].value * 0.02; // Speed scales from 0
+      const spiralIntensity = encoders[4].value * 0.0005; // Spiral/rotation effect
 
       // Determine active colors
       const activeColors = [];
