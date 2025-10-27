@@ -19,7 +19,7 @@ export const useHardwareData = () => {
 
   useEffect(() => {
     // Connect to the socket server
-    const socket = io('http://localhost:5000', {
+    const socket = io('http://localhost:3001', {
       transports: ['websocket', 'polling'],
     });
     socketRef.current = socket;

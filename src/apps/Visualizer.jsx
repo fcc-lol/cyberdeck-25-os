@@ -220,71 +220,84 @@ function Visualizer({ hardwareData }) {
 
       // Draw debug info if enabled
       if (showDebugRef.current) {
+        // Get current connected status
+        const { connected } = hardwareDataRef.current;
+
         // Draw debug background
         if (key.active === true) {
           ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-          ctx.fillRect(10, 10, 420, 280);
+          ctx.fillRect(10, 10, 420, 310);
           ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         } else {
           ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-          ctx.fillRect(10, 10, 420, 280);
+          ctx.fillRect(10, 10, 420, 310);
           ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         }
         ctx.font = '16px monospace';
+
+        // Connection status
+        ctx.fillText(
+          `SOCKET: ${connected ? '● CONNECTED' : '○ DISCONNECTED'}`,
+          20,
+          35,
+        );
+        ctx.fillText(`─────────────────────────────`, 20, 50);
 
         // Hardware inputs
         ctx.fillText(
           `KEY: ${key.active === true ? 'ACTIVE' : 'INACTIVE'}`,
           20,
-          35,
+          65,
         );
-        ctx.fillText(`─────────────────────────────`, 20, 50);
+        ctx.fillText(`─────────────────────────────`, 20, 80);
         ctx.fillText(
           `E1: ${encoders[1].value
             .toString()
             .padStart(4)} → Density: ${Math.floor(density)}`,
           20,
-          75,
+          105,
         );
         ctx.fillText(
           `E2: ${encoders[2].value
             .toString()
             .padStart(4)} → Size: ${sizeMultiplier.toFixed(2)}x`,
           20,
-          100,
+          130,
         );
         ctx.fillText(
           `E3: ${encoders[3].value
             .toString()
             .padStart(4)} → Speed: ${speedMultiplier.toFixed(2)}x`,
           20,
-          125,
+          155,
         );
         ctx.fillText(
           `E4: ${encoders[4].value
             .toString()
             .padStart(4)} → Spiral: ${spiralIntensity.toFixed(3)}`,
           20,
-          150,
+          180,
         );
-        ctx.fillText(`─────────────────────────────`, 20, 165);
+        ctx.fillText(`─────────────────────────────`, 20, 195);
         ctx.fillText(
           `RED:   ${switches.red.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
           20,
-          190,
+          220,
         );
         ctx.fillText(
-          `GREEN: ${switches.green.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
+          `GREEN: ${
+            switches.green.active === true ? '● ACTIVE' : '○ INACTIVE'
+          }`,
           20,
-          215,
+          245,
         );
         ctx.fillText(
           `BLUE:  ${switches.blue.active === true ? '● ACTIVE' : '○ INACTIVE'}`,
           20,
-          240,
+          270,
         );
-        ctx.fillText(`─────────────────────────────`, 20, 255);
-        ctx.fillText(`Particles: ${particlesRef.current.length}`, 20, 280);
+        ctx.fillText(`─────────────────────────────`, 20, 285);
+        ctx.fillText(`Particles: ${particlesRef.current.length}`, 20, 310);
       }
 
       animationRef.current = requestAnimationFrame(animate);
