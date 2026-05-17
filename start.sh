@@ -22,13 +22,13 @@ URL="http://localhost:5173"
 
 open_chromium() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    open -a "Chromium" "$URL" 2>/dev/null \
-      || open -a "Google Chrome" "$URL" 2>/dev/null \
+    open -na "Chromium" --args --kiosk "$URL" 2>/dev/null \
+      || open -na "Google Chrome" --args --kiosk "$URL" 2>/dev/null \
       || open "$URL"
   elif command -v chromium-browser >/dev/null 2>&1; then
-    chromium-browser "$URL" >/dev/null 2>&1 &
+    chromium-browser --kiosk "$URL" >/dev/null 2>&1 &
   elif command -v chromium >/dev/null 2>&1; then
-    chromium "$URL" >/dev/null 2>&1 &
+    chromium --kiosk "$URL" >/dev/null 2>&1 &
   else
     echo "Could not find Chromium. Open $URL in your browser."
   fi
