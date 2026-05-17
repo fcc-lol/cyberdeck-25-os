@@ -52,7 +52,8 @@ function MetaballsFluid({ hardwareData }) {
     const ctx = canvas.getContext('2d');
 
     // Offscreen low-res buffer for the scalar field
-    const CELL = 6; // downsample factor
+    const CELL = 8; // downsample factor
+    const MAX_BLOBS = 18; // per active color
     let fieldCanvas = document.createElement('canvas');
     let fieldCtx = fieldCanvas.getContext('2d');
     let fieldImage = null;
@@ -92,9 +93,9 @@ function MetaballsFluid({ hardwareData }) {
       const invert = key.active === true;
       const count = Math.max(
         3,
-        Math.min(40, Math.floor(3 + Math.abs(encoders[1].value) * 1.2)),
+        Math.min(MAX_BLOBS, Math.floor(3 + Math.abs(encoders[1].value) * 1.2)),
       );
-      const radiusMul = Math.max(0.3, 1 + encoders[3].value * 0.08);
+      const radiusMul = Math.min(2.5, Math.max(0.3, 1 + encoders[3].value * 0.08));
       const speedMul = encoders[2].value * 0.04;
       const distort = encoders[4].value * 0.001;
       // threshold: lower threshold = more stringy tendrils

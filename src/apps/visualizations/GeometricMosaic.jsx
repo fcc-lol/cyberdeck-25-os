@@ -70,10 +70,11 @@ function GeometricMosaic({ hardwareData }) {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Map encoder inputs
-      const gridSize = Math.max(3, Math.min(40, Math.floor(4 + Math.abs(encoders[1].value))));
-      const tileScale = Math.max(0.3, 1 + encoders[3].value * 0.05);
+      const MAX_GRID = 28;
+      const gridSize = Math.max(3, Math.min(MAX_GRID, Math.floor(4 + Math.abs(encoders[1].value))));
+      const tileScale = Math.min(2.5, Math.max(0.3, 1 + encoders[3].value * 0.05));
       const pulseSpeed = encoders[2].value * 0.05;
-      const rotationRate = encoders[4].value * 0.01;
+      const rotationRate = Math.min(2.0, Math.abs(encoders[4].value * 0.01)) * Math.sign(encoders[4].value || 1);
       const hueShift = t * rotationRate * 30;
 
       // Active colors
@@ -135,10 +136,10 @@ function GeometricMosaic({ hardwareData }) {
             }
           }
 
-          // Draw hexagon
-          ctx.save();
-          ctx.translate(cx, cy);
-          ctx.rotate(rot);
+          // Draw hexagon (setTransform avoids save/restore overhead per tile)
+          const cosR = Math.cos(rot);
+          const sinR = Math.sin(rot);
+          ctx.setTransform(cosR, sinR, -sinR, cosR, cx, cy);
           const r2 = hexRadius * tileScale * pulse;
           ctx.beginPath();
           for (let i = 0; i < 6; i++) {
@@ -151,10 +152,11 @@ function GeometricMosaic({ hardwareData }) {
           ctx.closePath();
           ctx.fillStyle = fill;
           ctx.fill();
-          ctx.restore();
           drawnCount++;
         }
       }
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
 
       // Debug overlay
       if (showDebugRef.current) {

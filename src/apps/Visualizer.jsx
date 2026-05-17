@@ -14,6 +14,8 @@ const Canvas = styled.canvas`
   display: block;
 `;
 
+const MAX_PARTICLES = 300; // Pi-friendly cap
+
 function Visualizer({ hardwareData }) {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
@@ -74,9 +76,9 @@ function Visualizer({ hardwareData }) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Black background
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      const density = Math.abs(50 + encoders[1].value * 5);
-      const speedMultiplier = encoders[2].value * 0.02; // Speed scales from 0
-      const sizeMultiplier = Math.max(0.3, 1 + encoders[3].value * 0.1); // Minimum size of 0.3 (30%)
+      const density = Math.min(MAX_PARTICLES, Math.abs(50 + encoders[1].value * 5));
+      const speedMultiplier = Math.min(8, encoders[2].value * 0.02); // Speed scales from 0
+      const sizeMultiplier = Math.min(8, Math.max(0.3, 1 + encoders[3].value * 0.1)); // Minimum size of 0.3 (30%)
       const spiralIntensity = encoders[4].value * 0.0005; // Spiral/rotation effect
 
       // Determine active colors
@@ -196,7 +198,7 @@ function Visualizer({ hardwareData }) {
         if (index < particlesRef.current.length - 1) {
           for (
             let j = index + 1;
-            j < Math.min(index + 5, particlesRef.current.length);
+            j < Math.min(index + 3, particlesRef.current.length);
             j++
           ) {
             const other = particlesRef.current[j];

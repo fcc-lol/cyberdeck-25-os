@@ -22,6 +22,9 @@ const DIGITS = '0123456789'.split('');
 const PUNCT = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`'.split('');
 const GLYPHS = [...KATAKANA, ...DIGITS, ...PUNCT];
 
+const MAX_COLUMNS = 80;
+const MAX_TRAIL = 18;
+
 const randomGlyph = () => GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
 
 function MatrixRain({ hardwareData }) {
@@ -83,9 +86,9 @@ function MatrixRain({ hardwareData }) {
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const columnCount = Math.max(
-        8,
-        Math.floor(40 + encoders[1].value * 2),
+      const columnCount = Math.min(
+        MAX_COLUMNS,
+        Math.max(8, Math.floor(40 + encoders[1].value * 2)),
       );
       const sizeMultiplier = Math.max(0.3, 1 + encoders[3].value * 0.1);
       const fallSpeed = Math.max(0.5, 2 + encoders[2].value * 0.3);
@@ -95,7 +98,7 @@ function MatrixRain({ hardwareData }) {
       );
 
       const baseFontPx = canvas.width / columnCount;
-      const fontPx = Math.max(4, baseFontPx * sizeMultiplier);
+      const fontPx = Math.min(48, Math.max(4, baseFontPx * sizeMultiplier));
       const colWidth = canvas.width / columnCount;
 
       // Determine active colors
@@ -112,7 +115,7 @@ function MatrixRain({ hardwareData }) {
           const i = columnsRef.current.length;
           const color =
             activeColors[Math.floor(Math.random() * activeColors.length)];
-          const trailLen = 8 + Math.floor(Math.random() * 20);
+          const trailLen = Math.min(MAX_TRAIL, 8 + Math.floor(Math.random() * 12));
           columnsRef.current.push({
             x: i * colWidth + colWidth / 2,
             y: Math.random() * canvas.height,
@@ -204,7 +207,7 @@ function MatrixRain({ hardwareData }) {
         if (col.y - col.trailLen * fontPx > canvas.height) {
           col.y = -Math.random() * canvas.height * 0.5;
           col.speed = 0.5 + Math.random() * 1.5;
-          col.trailLen = 8 + Math.floor(Math.random() * 20);
+          col.trailLen = Math.min(MAX_TRAIL, 8 + Math.floor(Math.random() * 12));
           col.chars = Array.from({ length: col.trailLen }, () => randomGlyph());
           if (activeColors.length > 0) {
             col.color =

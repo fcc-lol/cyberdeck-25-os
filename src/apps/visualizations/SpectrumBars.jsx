@@ -14,6 +14,8 @@ const Canvas = styled.canvas`
   display: block;
 `;
 
+const MAX_BARS = 96;
+
 function SpectrumBars({ hardwareData }) {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
@@ -77,9 +79,9 @@ function SpectrumBars({ hardwareData }) {
 
       const barCount = Math.max(
         8,
-        Math.min(128, Math.floor(Math.abs(32 + encoders[1].value * 2))),
+        Math.min(MAX_BARS, Math.floor(Math.abs(32 + encoders[1].value * 2))),
       );
-      const amplitude = Math.max(0.3, 1 + encoders[3].value * 0.08);
+      const amplitude = Math.min(3, Math.max(0.3, 1 + encoders[3].value * 0.08));
       const speed = Math.max(0, 0.005 + encoders[2].value * 0.0015);
       const spectrum = Math.max(0.2, 1 + encoders[4].value * 0.12);
 
@@ -91,6 +93,19 @@ function SpectrumBars({ hardwareData }) {
         activeColors.push([40, 255, 80]);
       if (switches.blue.active === true)
         activeColors.push([60, 140, 255]);
+
+      // Precompute color stop strings per active color to avoid per-bar allocation
+      const colorStopCache = activeColors.map(([r, g, b]) => {
+        const topR = inverted ? Math.floor(r * 0.4) : Math.min(255, r + 120);
+        const topG = inverted ? Math.floor(g * 0.4) : Math.min(255, g + 120);
+        const topB = inverted ? Math.floor(b * 0.4) : Math.min(255, b + 120);
+        return {
+          top: `rgba(${topR},${topG},${topB},0.95)`,
+          base: `rgba(${r},${g},${b},0.9)`,
+          mirrorBase: `rgba(${r},${g},${b},0.45)`,
+          mirrorFade: `rgba(${r},${g},${b},0)`,
+        };
+      });
 
       // Resize bars array to match barCount
       if (barsRef.current.length !== barCount) {
@@ -161,16 +176,13 @@ function SpectrumBars({ hardwareData }) {
         const peakH = Math.max(0, bar.peak) * maxBarHeight;
 
         // Choose color for this bar based on index
-        const colorRGB = activeColors[i % activeColors.length];
-        const [r, g, b] = colorRGB;
+        const colorIdx = i % activeColors.length;
+        const stops = colorStopCache[colorIdx];
 
         // Vertical gradient from color at base to white/color-shifted at top
         const grad = ctx.createLinearGradient(0, baselineY - h, 0, baselineY);
-        const topR = inverted ? Math.floor(r * 0.4) : Math.min(255, r + 120);
-        const topG = inverted ? Math.floor(g * 0.4) : Math.min(255, g + 120);
-        const topB = inverted ? Math.floor(b * 0.4) : Math.min(255, b + 120);
-        grad.addColorStop(0, `rgba(${topR}, ${topG}, ${topB}, 0.95)`);
-        grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.9)`);
+        grad.addColorStop(0, stops.top);
+        grad.addColorStop(1, stops.base);
 
         ctx.fillStyle = grad;
         ctx.fillRect(x, baselineY - h, barWidth, h);
@@ -183,8 +195,8 @@ function SpectrumBars({ hardwareData }) {
           0,
           baselineY + mirrorH,
         );
-        mgrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.45)`);
-        mgrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+        mgrad.addColorStop(0, stops.mirrorBase);
+        mgrad.addColorStop(1, stops.mirrorFade);
         ctx.fillStyle = mgrad;
         ctx.fillRect(x, baselineY, barWidth, mirrorH);
 

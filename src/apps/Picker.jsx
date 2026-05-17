@@ -27,6 +27,12 @@ const Tile = styled.div`
   user-select: none;
   cursor: ${(p) => (p.$dragging ? 'grabbing' : 'grab')};
   touch-action: none;
+  transform-origin: 50% 35%;
+  transform: ${(p) => (p.$launching ? 'scale(3.5)' : 'scale(1)')};
+  opacity: ${(p) => (p.$launching ? 0 : 1)};
+  transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 280ms ease-out;
+  pointer-events: ${(p) => (p.$launching ? 'none' : 'auto')};
 `;
 
 const Icon = styled.img`
@@ -79,7 +85,7 @@ function loadPositions(items) {
   }
 }
 
-function Picker({ items, onOpen }) {
+function Picker({ items, onOpen, launchingKey }) {
   const [positions, setPositions] = useState(() => loadPositions(items));
   const [selectedKey, setSelectedKey] = useState(null);
   const [draggingKey, setDraggingKey] = useState(null);
@@ -144,6 +150,7 @@ function Picker({ items, onOpen }) {
           <Tile
             key={item.key}
             $dragging={draggingKey === item.key}
+            $launching={launchingKey === item.key}
             style={{ left: pos.x, top: pos.y }}
             onMouseDown={(e) => handleTileMouseDown(e, item.key)}
             onDoubleClick={() => onOpen(item.key)}

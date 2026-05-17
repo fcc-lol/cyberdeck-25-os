@@ -14,6 +14,8 @@ const Canvas = styled.canvas`
   display: block;
 `;
 
+const MAX_SEGMENTS = 20;
+
 function KaleidoscopeMandala({ hardwareData }) {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
@@ -92,9 +94,9 @@ function KaleidoscopeMandala({ hardwareData }) {
 
       const segments = Math.max(
         3,
-        Math.min(24, 6 + Math.abs(encoders[1].value)),
+        Math.min(MAX_SEGMENTS, 6 + Math.abs(encoders[1].value)),
       );
-      const scale = Math.max(0.3, 1 + encoders[3].value * 0.08);
+      const scale = Math.min(2.5, Math.max(0.3, 1 + encoders[3].value * 0.08));
       const evolveRate = encoders[2].value * 0.05;
       const rotationRate = encoders[4].value * 0.02;
 

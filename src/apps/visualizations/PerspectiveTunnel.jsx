@@ -64,6 +64,9 @@ function PerspectiveTunnel({ hardwareData }) {
     const NEAR = 8;
     const FAR = 800;
     const FOCAL = 500;
+    const MAX_RINGS = 40;        // Pi-safe ring ceiling
+    const MAX_SIDES = 12;        // Pi-safe polygon side ceiling
+    const MAX_SIZE = 3;          // Pi-safe radius multiplier ceiling
 
     // Animation loop
     const animate = () => {
@@ -80,14 +83,14 @@ function PerspectiveTunnel({ hardwareData }) {
 
       const ringCount = Math.max(
         4,
-        Math.min(50, Math.floor(Math.abs(20 + encoders[1].value * 2))),
+        Math.min(MAX_RINGS, Math.floor(Math.abs(20 + encoders[1].value * 2))),
       );
-      const sizeMultiplier = Math.max(0.3, 1 + encoders[3].value * 0.1);
+      const sizeMultiplier = Math.min(MAX_SIZE, Math.max(0.3, 1 + encoders[3].value * 0.1));
       const speed = Math.max(0, 0.5 + encoders[2].value * 0.4);
       const twist = encoders[4].value * 0.05;
       const sides = Math.max(
         3,
-        Math.min(12, 3 + Math.floor(Math.abs(encoders[4].value) / 3)),
+        Math.min(MAX_SIDES, 3 + Math.floor(Math.abs(encoders[4].value) / 3)),
       );
 
       const centerX = canvas.width / 2;
@@ -134,11 +137,16 @@ function PerspectiveTunnel({ hardwareData }) {
       const lineColorBase = key.active === true ? [30, 30, 50] : null;
       ctx.lineWidth = 1;
 
+      const offScreenThreshold = 3 * Math.max(canvas.width, canvas.height);
+
       for (let i = 0; i < drawList.length - 1; i++) {
         const a = drawList[i];
         const b = drawList[i + 1];
         const rA = (baseRadius * sizeMultiplier * FOCAL) / a.z;
         const rB = (baseRadius * sizeMultiplier * FOCAL) / b.z;
+
+        // Skip spoke pair if both rings are entirely off-screen
+        if (rA > offScreenThreshold && rB > offScreenThreshold) continue;
         const rotA = a.z * twist * 0.01;
         const rotB = b.z * twist * 0.01;
         const depth = 1 - (a.z - NEAR) / span;
@@ -166,6 +174,10 @@ function PerspectiveTunnel({ hardwareData }) {
       for (let i = 0; i < drawList.length; i++) {
         const { z, index } = drawList[i];
         const screenRadius = (baseRadius * sizeMultiplier * FOCAL) / z;
+
+        // Skip rings entirely off-screen
+        if (screenRadius > offScreenThreshold) continue;
+
         const depth = 1 - (z - NEAR) / span;
         const rot = z * twist * 0.01;
 

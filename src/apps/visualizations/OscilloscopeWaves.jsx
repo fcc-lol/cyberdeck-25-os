@@ -1,6 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
+const MAX_WAVES = 32;
+const MAX_SIZE_MULTIPLIER = 6;
+const WAVE_STEP = 3;
+
 const Container = styled.div`
   flex: 1;
   overflow: hidden;
@@ -70,8 +74,8 @@ function OscilloscopeWaves({ hardwareData }) {
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const waveCount = Math.max(4, Math.min(60, Math.abs(8 + encoders[1].value * 1)));
-      const sizeMultiplier = Math.max(0.3, 1 + encoders[3].value * 0.1);
+      const waveCount = Math.max(4, Math.min(MAX_WAVES, Math.abs(8 + encoders[1].value * 1)));
+      const sizeMultiplier = Math.min(MAX_SIZE_MULTIPLIER, Math.max(0.3, 1 + encoders[3].value * 0.1));
       const speedMultiplier = encoders[2].value * 0.02;
       const frequencyAmount = Math.abs(encoders[4].value) * 0.1;
 
@@ -129,7 +133,7 @@ function OscilloscopeWaves({ hardwareData }) {
             ctx.beginPath();
             ctx.strokeStyle = `rgba(${colorRGB[0]}, ${colorRGB[1]}, ${colorRGB[2]}, ${0.15 * fadeMix})`;
             ctx.lineWidth = strokeWidth * 4;
-            for (let x = 0; x <= canvas.width; x += 2) {
+            for (let x = 0; x <= canvas.width; x += WAVE_STEP) {
               const t = x * freq;
               const fundamental = Math.sin(t + wavePhase);
               const harmonic = Math.sin(t * harmonicRatio + wavePhase * 1.3) * harmonicMix;
@@ -143,7 +147,7 @@ function OscilloscopeWaves({ hardwareData }) {
             ctx.beginPath();
             ctx.strokeStyle = `rgba(${colorRGB[0]}, ${colorRGB[1]}, ${colorRGB[2]}, ${0.9})`;
             ctx.lineWidth = strokeWidth;
-            for (let x = 0; x <= canvas.width; x += 2) {
+            for (let x = 0; x <= canvas.width; x += WAVE_STEP) {
               const t = x * freq;
               const fundamental = Math.sin(t + wavePhase);
               const harmonic = Math.sin(t * harmonicRatio + wavePhase * 1.3) * harmonicMix;

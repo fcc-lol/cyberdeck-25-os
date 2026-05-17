@@ -56,6 +56,8 @@ function LissajousHarmonograph({ hardwareData }) {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
+    const MAX_POINTS_PER_FRAME = 400;
+
     const animate = () => {
       const { switches, encoders, key } = hardwareDataRef.current;
 
@@ -69,12 +71,12 @@ function LissajousHarmonograph({ hardwareData }) {
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const pointsPerFrame = Math.max(
-        1,
-        Math.floor(Math.abs(40 + encoders[1].value * 4)),
+      const pointsPerFrame = Math.min(
+        MAX_POINTS_PER_FRAME,
+        Math.max(1, Math.floor(Math.abs(40 + encoders[1].value * 4))),
       );
-      const scale = Math.max(0.3, 1 + encoders[3].value * 0.08);
-      const dt = 0.003 + encoders[2].value * 0.0008;
+      const scale = Math.min(3, Math.max(0.3, 1 + encoders[3].value * 0.08));
+      const dt = Math.min(0.05, 0.003 + encoders[2].value * 0.0008);
       const ratio = 2 + encoders[4].value * 0.05;
 
       const activeColors = [];

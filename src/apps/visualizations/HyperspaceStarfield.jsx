@@ -62,6 +62,7 @@ function HyperspaceStarfield({ hardwareData }) {
 
     const FAR_Z = 1000;
     const FOCAL = 350;
+    const MAX_STARS = 600;
 
     const spawnStar = (color) => {
       const x = (Math.random() - 0.5) * 2000;
@@ -92,9 +93,9 @@ function HyperspaceStarfield({ hardwareData }) {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const density = Math.floor(
-        Math.max(0, Math.min(2000, 50 + Math.abs(encoders[1].value) * 15)),
+        Math.max(20, Math.min(MAX_STARS, 50 + Math.abs(encoders[1].value) * 15)),
       );
-      const brightness = Math.max(0.3, 1 + encoders[3].value * 0.1);
+      const brightness = Math.min(4, Math.max(0.3, 1 + encoders[3].value * 0.1));
       const velocity = encoders[2].value * 0.5;
       const rollRate = encoders[4].value * 0.002;
 

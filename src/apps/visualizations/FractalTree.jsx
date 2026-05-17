@@ -60,6 +60,7 @@ function FractalTree({ hardwareData }) {
     window.addEventListener('resize', resizeCanvas);
 
     const startTime = performance.now();
+    const MAX_DEPTH = 10;
 
     // Animation loop
     const animate = () => {
@@ -77,9 +78,9 @@ function FractalTree({ hardwareData }) {
       // Map encoders
       const depth = Math.max(
         4,
-        Math.min(12, Math.round(8 + encoders[1].value * 0.5)),
+        Math.min(MAX_DEPTH, Math.round(8 + encoders[1].value * 0.5)),
       );
-      const lengthMultiplier = Math.max(0.3, 1 + encoders[3].value * 0.08);
+      const lengthMultiplier = Math.min(3, Math.max(0.3, 1 + encoders[3].value * 0.08));
       const windSpeed = encoders[2].value * 0.0008;
       const branchAngle = Math.PI / 7 + encoders[4].value * 0.015;
 
@@ -109,6 +110,10 @@ function FractalTree({ hardwareData }) {
 
         const x2 = x + Math.cos(finalAngle) * length;
         const y2 = y + Math.sin(finalAngle) * length;
+
+        const w = canvas.width;
+        const h = canvas.height;
+        if (x2 < -200 || x2 > w + 200 || y2 < -200 || y2 > h + 200) return;
 
         let colorRGB;
         if (activeColors.length === 0) {
