@@ -24,6 +24,8 @@ const Tile = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 44px;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji',
+    'Twemoji Mozilla', 'EmojiOne Color', 'Android Emoji', sans-serif;
   border-radius: 12px;
   user-select: none;
   background: ${(p) => (p.$dragging ? 'rgba(255,255,255,0.12)' : 'transparent')};

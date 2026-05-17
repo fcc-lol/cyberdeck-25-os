@@ -30,10 +30,10 @@ const Screen = styled.div`
 
 const VISUALIZATIONS = [
   { key: 'particles', emoji: '✨', label: 'Particles', component: Visualizer },
-  { key: 'waves', emoji: '〰️', label: 'Oscilloscope', component: OscilloscopeWaves },
+  { key: 'waves', emoji: '🌊', label: 'Oscilloscope', component: OscilloscopeWaves },
   { key: 'mosaic', emoji: '🔷', label: 'Mosaic', component: GeometricMosaic },
   { key: 'tunnel', emoji: '🌀', label: 'Tunnel', component: PerspectiveTunnel },
-  { key: 'fluid', emoji: '🫧', label: 'Fluid', component: MetaballsFluid },
+  { key: 'fluid', emoji: '🔮', label: 'Fluid', component: MetaballsFluid },
   { key: 'stars', emoji: '🚀', label: 'Hyperspace', component: HyperspaceStarfield },
   { key: 'tree', emoji: '🌳', label: 'Fractal Tree', component: FractalTree },
   { key: 'bars', emoji: '📊', label: 'Spectrum', component: SpectrumBars },
