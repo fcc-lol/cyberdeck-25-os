@@ -29,11 +29,11 @@ const Tile = styled.div`
   touch-action: none;
 `;
 
-const Emoji = styled.div`
-  font-size: 44px;
-  line-height: 1;
-  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji',
-    'Twemoji Mozilla', 'EmojiOne Color', 'Android Emoji', sans-serif;
+const Icon = styled.img`
+  width: 56px;
+  height: 56px;
+  pointer-events: none;
+  -webkit-user-drag: none;
 `;
 
 const Label = styled.div`
@@ -148,7 +148,7 @@ function Picker({ items, onOpen }) {
             onMouseDown={(e) => handleTileMouseDown(e, item.key)}
             onDoubleClick={() => onOpen(item.key)}
           >
-            <Emoji>{item.emoji}</Emoji>
+            <Icon src={item.icon} alt="" draggable={false} />
             <Label $selected={selectedKey === item.key}>{item.label}</Label>
           </Tile>
         );

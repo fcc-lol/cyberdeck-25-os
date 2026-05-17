@@ -29,17 +29,17 @@ const Screen = styled.div`
 `;
 
 const VISUALIZATIONS = [
-  { key: 'particles', emoji: '✨', label: 'Particles', component: Visualizer },
-  { key: 'waves', emoji: '🌊', label: 'Oscilloscope', component: OscilloscopeWaves },
-  { key: 'mosaic', emoji: '🔷', label: 'Mosaic', component: GeometricMosaic },
-  { key: 'tunnel', emoji: '🌀', label: 'Tunnel', component: PerspectiveTunnel },
-  { key: 'fluid', emoji: '🔮', label: 'Fluid', component: MetaballsFluid },
-  { key: 'stars', emoji: '🚀', label: 'Hyperspace', component: HyperspaceStarfield },
-  { key: 'tree', emoji: '🌳', label: 'Fractal Tree', component: FractalTree },
-  { key: 'bars', emoji: '📊', label: 'Spectrum', component: SpectrumBars },
-  { key: 'mandala', emoji: '🌸', label: 'Mandala', component: KaleidoscopeMandala },
-  { key: 'rain', emoji: '💧', label: 'Matrix Rain', component: MatrixRain },
-  { key: 'curve', emoji: '🎯', label: 'Harmonograph', component: LissajousHarmonograph },
+  { key: 'particles', icon: '/emoji/sparkles.svg', label: 'Particles', component: Visualizer },
+  { key: 'waves', icon: '/emoji/wave.svg', label: 'Oscilloscope', component: OscilloscopeWaves },
+  { key: 'mosaic', icon: '/emoji/diamond.svg', label: 'Mosaic', component: GeometricMosaic },
+  { key: 'tunnel', icon: '/emoji/cyclone.svg', label: 'Tunnel', component: PerspectiveTunnel },
+  { key: 'fluid', icon: '/emoji/crystal-ball.svg', label: 'Fluid', component: MetaballsFluid },
+  { key: 'stars', icon: '/emoji/rocket.svg', label: 'Hyperspace', component: HyperspaceStarfield },
+  { key: 'tree', icon: '/emoji/tree.svg', label: 'Fractal Tree', component: FractalTree },
+  { key: 'bars', icon: '/emoji/bar-chart.svg', label: 'Spectrum', component: SpectrumBars },
+  { key: 'mandala', icon: '/emoji/cherry-blossom.svg', label: 'Mandala', component: KaleidoscopeMandala },
+  { key: 'rain', icon: '/emoji/droplet.svg', label: 'Matrix Rain', component: MatrixRain },
+  { key: 'curve', icon: '/emoji/target.svg', label: 'Harmonograph', component: LissajousHarmonograph },
 ];
 
 function App() {
