@@ -39,7 +39,7 @@ const VISUALIZATIONS = [
   { key: 'bars', emoji: '📊', label: 'Spectrum', component: SpectrumBars },
   { key: 'mandala', emoji: '🌸', label: 'Mandala', component: KaleidoscopeMandala },
   { key: 'rain', emoji: '💧', label: 'Matrix Rain', component: MatrixRain },
-  { key: 'curve', emoji: '➰', label: 'Harmonograph', component: LissajousHarmonograph },
+  { key: 'curve', emoji: '🎯', label: 'Harmonograph', component: LissajousHarmonograph },
 ];
 
 function App() {
