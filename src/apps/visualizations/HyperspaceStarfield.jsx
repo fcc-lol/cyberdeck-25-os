@@ -62,7 +62,7 @@ function HyperspaceStarfield({ hardwareData }) {
 
     const FAR_Z = 1000;
     const FOCAL = 350;
-    const MAX_STARS = 600;
+    const MAX_STARS = 300;
 
     const spawnStar = (color) => {
       const x = (Math.random() - 0.5) * 2000;

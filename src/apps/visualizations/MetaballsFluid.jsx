@@ -52,8 +52,8 @@ function MetaballsFluid({ hardwareData }) {
     const ctx = canvas.getContext('2d');
 
     // Offscreen low-res buffer for the scalar field
-    const CELL = 8; // downsample factor
-    const MAX_BLOBS = 18; // per active color
+    const CELL = 10; // downsample factor
+    const MAX_BLOBS = 10; // per active color
     let fieldCanvas = document.createElement('canvas');
     let fieldCtx = fieldCanvas.getContext('2d');
     let fieldImage = null;

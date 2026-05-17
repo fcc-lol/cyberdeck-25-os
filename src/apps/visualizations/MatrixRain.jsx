@@ -22,8 +22,8 @@ const DIGITS = '0123456789'.split('');
 const PUNCT = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`'.split('');
 const GLYPHS = [...KATAKANA, ...DIGITS, ...PUNCT];
 
-const MAX_COLUMNS = 80;
-const MAX_TRAIL = 18;
+const MAX_COLUMNS = 50;
+const MAX_TRAIL = 14;
 
 const randomGlyph = () => GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
 

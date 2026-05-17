@@ -14,7 +14,7 @@ const Canvas = styled.canvas`
   display: block;
 `;
 
-const MAX_PARTICLES = 300; // Pi-friendly cap
+const MAX_PARTICLES = 150; // Pi-friendly cap
 
 function Visualizer({ hardwareData }) {
   const canvasRef = useRef(null);

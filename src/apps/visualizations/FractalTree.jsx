@@ -60,7 +60,7 @@ function FractalTree({ hardwareData }) {
     window.addEventListener('resize', resizeCanvas);
 
     const startTime = performance.now();
-    const MAX_DEPTH = 10;
+    const MAX_DEPTH = 9;
 
     // Animation loop
     const animate = () => {

@@ -14,7 +14,7 @@ const Canvas = styled.canvas`
   display: block;
 `;
 
-const MAX_SEGMENTS = 20;
+const MAX_SEGMENTS = 12;
 
 function KaleidoscopeMandala({ hardwareData }) {
   const canvasRef = useRef(null);

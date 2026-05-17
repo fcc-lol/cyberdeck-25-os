@@ -14,7 +14,7 @@ const Canvas = styled.canvas`
   display: block;
 `;
 
-const MAX_BARS = 96;
+const MAX_BARS = 48;
 
 function SpectrumBars({ hardwareData }) {
   const canvasRef = useRef(null);

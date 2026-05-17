@@ -70,7 +70,7 @@ function GeometricMosaic({ hardwareData }) {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Map encoder inputs
-      const MAX_GRID = 28;
+      const MAX_GRID = 18;
       const gridSize = Math.max(3, Math.min(MAX_GRID, Math.floor(4 + Math.abs(encoders[1].value))));
       const tileScale = Math.min(2.5, Math.max(0.3, 1 + encoders[3].value * 0.05));
       const pulseSpeed = encoders[2].value * 0.05;

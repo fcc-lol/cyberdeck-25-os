@@ -56,7 +56,7 @@ function LissajousHarmonograph({ hardwareData }) {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    const MAX_POINTS_PER_FRAME = 400;
+    const MAX_POINTS_PER_FRAME = 200;
 
     const animate = () => {
       const { switches, encoders, key } = hardwareDataRef.current;

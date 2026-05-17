@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
-const MAX_WAVES = 32;
+const MAX_WAVES = 16;
 const MAX_SIZE_MULTIPLIER = 6;
-const WAVE_STEP = 3;
+const WAVE_STEP = 4;
 
 const Container = styled.div`
   flex: 1;

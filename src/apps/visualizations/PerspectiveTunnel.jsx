@@ -64,7 +64,7 @@ function PerspectiveTunnel({ hardwareData }) {
     const NEAR = 8;
     const FAR = 800;
     const FOCAL = 500;
-    const MAX_RINGS = 40;        // Pi-safe ring ceiling
+    const MAX_RINGS = 22;        // Pi-safe ring ceiling
     const MAX_SIDES = 12;        // Pi-safe polygon side ceiling
     const MAX_SIZE = 3;          // Pi-safe radius multiplier ceiling
 
