@@ -15,10 +15,10 @@ Live build at <https://cyberdeck-25-os.fcc.lol>. Auto-deploys on every push to `
 ### Local
 
 ```sh
-npm start
+./start.sh
 ```
 
-Installs (uses cached deps when warm) and starts Vite at <http://localhost:5173>.
+(or `npm start` — same effect.) Installs deps if `node_modules` is missing, then starts Vite at <http://localhost:5173>.
 
 The app opens a `socket.io` connection to `http://localhost:3001` for hardware input. Without that bridge running you'll see `DISCONNECTED` in the debug overlay and all encoder/switch values stay at zero — but the picker, launch animation, and visualizations still render, so it's fine for visual testing.
 
