@@ -18,4 +18,31 @@ if [ ! -d node_modules ]; then
   npm install
 fi
 
-npm run dev
+URL="http://localhost:5173"
+
+open_chromium() {
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    open -a "Chromium" "$URL" 2>/dev/null \
+      || open -a "Google Chrome" "$URL" 2>/dev/null \
+      || open "$URL"
+  elif command -v chromium-browser >/dev/null 2>&1; then
+    chromium-browser "$URL" >/dev/null 2>&1 &
+  elif command -v chromium >/dev/null 2>&1; then
+    chromium "$URL" >/dev/null 2>&1 &
+  else
+    echo "Could not find Chromium. Open $URL in your browser."
+  fi
+}
+
+(
+  for _ in $(seq 1 60); do
+    if curl -sf -o /dev/null "$URL"; then
+      open_chromium
+      exit 0
+    fi
+    sleep 0.3
+  done
+  echo "Timed out waiting for $URL"
+) &
+
+exec npm run dev
