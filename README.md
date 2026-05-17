@@ -1,5 +1,9 @@
 # Cyberdeck 25 OS
 
+Identifier: cyberdeck-25-os
+
+Created: Thu Oct 23 01:14:53 UTC 2025
+
 A reactive visualizer for the FCC cyberdeck hardware: 1 momentary key, 3 toggle switches, and 4 rotary encoders feed a grid of canvas visualizations selected from a desktop-style picker.
 
 ## Run it
