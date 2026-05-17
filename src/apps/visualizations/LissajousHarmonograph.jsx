@@ -20,7 +20,7 @@ function LissajousHarmonograph({ hardwareData }) {
   const hardwareDataRef = useRef(hardwareData);
   const tRef = useRef(0);
   const lastPointRef = useRef({});
-  const [showDebug, setShowDebug] = React.useState(true);
+  const [showDebug, setShowDebug] = React.useState(false);
   const showDebugRef = useRef(showDebug);
 
   useEffect(() => {

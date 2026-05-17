@@ -19,7 +19,7 @@ function KaleidoscopeMandala({ hardwareData }) {
   const animationRef = useRef(null);
   const wedgeCanvasRef = useRef(null);
   const hardwareDataRef = useRef(hardwareData);
-  const [showDebug, setShowDebug] = React.useState(true);
+  const [showDebug, setShowDebug] = React.useState(false);
   const showDebugRef = useRef(showDebug);
 
   // Keep hardware data ref updated

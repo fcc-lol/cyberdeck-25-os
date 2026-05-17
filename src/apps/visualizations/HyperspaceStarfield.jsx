@@ -20,7 +20,7 @@ function HyperspaceStarfield({ hardwareData }) {
   const starsRef = useRef([]);
   const rollAngleRef = useRef(0);
   const hardwareDataRef = useRef(hardwareData);
-  const [showDebug, setShowDebug] = React.useState(true);
+  const [showDebug, setShowDebug] = React.useState(false);
   const showDebugRef = useRef(showDebug);
 
   // Keep hardware data ref updated
