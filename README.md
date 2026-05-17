@@ -18,7 +18,17 @@ Live build at <https://cyberdeck-25-os.fcc.lol>. Auto-deploys on every push to `
 ./start.sh
 ```
 
-(or `npm start` — same effect.) Installs deps if `node_modules` is missing, then starts Vite at <http://localhost:5173>.
+(or `npm start` — same effect.) Installs deps if `node_modules` is missing, then starts Vite at <http://localhost:5173> and opens Chromium in kiosk mode.
+
+### Desktop shortcut on Raspberry Pi
+
+From inside the cloned repo on the Pi:
+
+```sh
+./install-desktop.sh
+```
+
+Generates a personalized `cyberdeck.desktop` launcher on `~/Desktop` (with absolute paths to this checkout's `start.sh` and icon). Double-click it to launch; pick "Execute in Terminal" on the first-run prompt so the dev-server log is visible.
 
 The app opens a `socket.io` connection to `http://localhost:3001` for hardware input. Without that bridge running you'll see `DISCONNECTED` in the debug overlay and all encoder/switch values stay at zero — but the picker, launch animation, and visualizations still render, so it's fine for visual testing.
 

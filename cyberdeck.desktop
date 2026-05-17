@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Cyberdeck
+Comment=Reactive visualizer for the FCC cyberdeck hardware
+Exec=__REPO__/start.sh
+Icon=__REPO__/public/emoji/sparkles.svg
+Terminal=true
+Categories=Utility;
