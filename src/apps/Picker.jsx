@@ -1,82 +1,146 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+
+const STORAGE_KEY = 'cyberdeck-picker-positions';
+const TILE_SIZE = 96;
+const GAP = 20;
+const COLUMNS = 4;
+const MARGIN = 80;
+const DRAG_THRESHOLD = 3;
 
 const Container = styled.div`
   flex: 1;
   background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
   overflow: hidden;
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 96px);
-  grid-auto-rows: 96px;
-  gap: 20px;
+  cursor: default;
 `;
 
 const Tile = styled.div`
+  position: absolute;
+  width: ${TILE_SIZE}px;
+  height: ${TILE_SIZE}px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 44px;
   border-radius: 12px;
-  cursor: pointer;
   user-select: none;
-  background: ${(p) =>
-    p.$selected ? 'rgba(255,255,255,0.08)' : 'transparent'};
+  background: ${(p) => (p.$dragging ? 'rgba(255,255,255,0.12)' : 'transparent')};
   border: 1px solid
-    ${(p) => (p.$selected ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.08)')};
+    ${(p) => (p.$dragging ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.08)')};
+  cursor: ${(p) => (p.$dragging ? 'grabbing' : 'grab')};
   transition: background 0.12s ease, border-color 0.12s ease;
+  touch-action: none;
 
   &:hover {
     background: rgba(255, 255, 255, 0.06);
   }
 `;
 
-function Picker({ items, onOpen, columns = 4 }) {
-  const [selected, setSelected] = useState(0);
+function defaultPositions(items) {
+  const stride = TILE_SIZE + GAP;
+  return items.reduce((acc, item, i) => {
+    acc[item.key] = {
+      x: MARGIN + (i % COLUMNS) * stride,
+      y: MARGIN + Math.floor(i / COLUMNS) * stride,
+    };
+    return acc;
+  }, {});
+}
+
+function loadPositions(items) {
+  const defaults = defaultPositions(items);
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaults;
+    const saved = JSON.parse(raw);
+    for (const key of Object.keys(saved)) {
+      if (
+        defaults[key] &&
+        typeof saved[key]?.x === 'number' &&
+        typeof saved[key]?.y === 'number'
+      ) {
+        defaults[key] = saved[key];
+      }
+    }
+    return defaults;
+  } catch {
+    return defaults;
+  }
+}
+
+function Picker({ items, onOpen }) {
+  const [positions, setPositions] = useState(() => loadPositions(items));
+  const [draggingKey, setDraggingKey] = useState(null);
+  const dragState = useRef(null);
 
   useEffect(() => {
-    const handleKey = (e) => {
-      if (e.code === 'ArrowRight') {
-        e.preventDefault();
-        setSelected((s) => Math.min(items.length - 1, s + 1));
-      } else if (e.code === 'ArrowLeft') {
-        e.preventDefault();
-        setSelected((s) => Math.max(0, s - 1));
-      } else if (e.code === 'ArrowDown') {
-        e.preventDefault();
-        setSelected((s) => Math.min(items.length - 1, s + columns));
-      } else if (e.code === 'ArrowUp') {
-        e.preventDefault();
-        setSelected((s) => Math.max(0, s - columns));
-      } else if (e.code === 'Enter') {
-        e.preventDefault();
-        onOpen(items[selected].key);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
+    } catch {
+      // ignore quota / private-mode failures
+    }
+  }, [positions]);
+
+  const handleMouseDown = (e, key) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const pos = positions[key];
+    dragState.current = {
+      key,
+      startX: e.clientX,
+      startY: e.clientY,
+      origX: pos.x,
+      origY: pos.y,
+      moved: false,
+    };
+
+    const onMove = (ev) => {
+      const s = dragState.current;
+      if (!s) return;
+      const dx = ev.clientX - s.startX;
+      const dy = ev.clientY - s.startY;
+      if (!s.moved && Math.abs(dx) + Math.abs(dy) > DRAG_THRESHOLD) {
+        s.moved = true;
+        setDraggingKey(s.key);
+      }
+      if (s.moved) {
+        setPositions((prev) => ({
+          ...prev,
+          [s.key]: { x: s.origX + dx, y: s.origY + dy },
+        }));
       }
     };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [items, selected, onOpen, columns]);
+
+    const onUp = () => {
+      dragState.current = null;
+      setDraggingKey(null);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  };
 
   return (
     <Container>
-      <Grid style={{ gridTemplateColumns: `repeat(${columns}, 96px)` }}>
-        {items.map((item, i) => (
+      {items.map((item) => {
+        const pos = positions[item.key] || { x: MARGIN, y: MARGIN };
+        return (
           <Tile
             key={item.key}
-            $selected={i === selected}
+            $dragging={draggingKey === item.key}
             title={item.label}
-            onClick={() => setSelected(i)}
+            style={{ left: pos.x, top: pos.y }}
+            onMouseDown={(e) => handleMouseDown(e, item.key)}
             onDoubleClick={() => onOpen(item.key)}
           >
             {item.emoji}
           </Tile>
-        ))}
-      </Grid>
+        );
+      })}
     </Container>
   );
 }
