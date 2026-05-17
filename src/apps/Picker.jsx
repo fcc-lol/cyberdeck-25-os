@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const STORAGE_KEY = 'cyberdeck-picker-positions';
-const TILE_SIZE = 96;
-const GAP = 20;
+const TILE_WIDTH = 96;
+const COL_STRIDE = 116;
+const ROW_STRIDE = 104;
 const COLUMNS = 4;
 const MARGIN = 80;
 const DRAG_THRESHOLD = 3;
@@ -18,34 +19,40 @@ const Container = styled.div`
 
 const Tile = styled.div`
   position: absolute;
-  width: ${TILE_SIZE}px;
-  height: ${TILE_SIZE}px;
+  width: ${TILE_WIDTH}px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  user-select: none;
+  cursor: ${(p) => (p.$dragging ? 'grabbing' : 'grab')};
+  touch-action: none;
+`;
+
+const Emoji = styled.div`
   font-size: 44px;
+  line-height: 1;
   font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji',
     'Twemoji Mozilla', 'EmojiOne Color', 'Android Emoji', sans-serif;
-  border-radius: 12px;
-  user-select: none;
-  background: ${(p) => (p.$dragging ? 'rgba(255,255,255,0.12)' : 'transparent')};
-  border: 1px solid
-    ${(p) => (p.$dragging ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.08)')};
-  cursor: ${(p) => (p.$dragging ? 'grabbing' : 'grab')};
-  transition: background 0.12s ease, border-color 0.12s ease;
-  touch-action: none;
+`;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.06);
-  }
+const Label = styled.div`
+  font-size: 12px;
+  line-height: 1.2;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  text-align: center;
+  background: ${(p) => (p.$selected ? '#fff' : 'transparent')};
+  color: ${(p) => (p.$selected ? '#000' : '#fff')};
 `;
 
 function defaultPositions(items) {
-  const stride = TILE_SIZE + GAP;
   return items.reduce((acc, item, i) => {
     acc[item.key] = {
-      x: MARGIN + (i % COLUMNS) * stride,
-      y: MARGIN + Math.floor(i / COLUMNS) * stride,
+      x: MARGIN + (i % COLUMNS) * COL_STRIDE,
+      y: MARGIN + Math.floor(i / COLUMNS) * ROW_STRIDE,
     };
     return acc;
   }, {});
@@ -74,6 +81,7 @@ function loadPositions(items) {
 
 function Picker({ items, onOpen }) {
   const [positions, setPositions] = useState(() => loadPositions(items));
+  const [selectedKey, setSelectedKey] = useState(null);
   const [draggingKey, setDraggingKey] = useState(null);
   const dragState = useRef(null);
 
@@ -85,9 +93,11 @@ function Picker({ items, onOpen }) {
     }
   }, [positions]);
 
-  const handleMouseDown = (e, key) => {
+  const handleTileMouseDown = (e, key) => {
     if (e.button !== 0) return;
-    e.preventDefault();
+    e.stopPropagation();
+    setSelectedKey(key);
+
     const pos = positions[key];
     dragState.current = {
       key,
@@ -127,19 +137,19 @@ function Picker({ items, onOpen }) {
   };
 
   return (
-    <Container>
+    <Container onMouseDown={() => setSelectedKey(null)}>
       {items.map((item) => {
         const pos = positions[item.key] || { x: MARGIN, y: MARGIN };
         return (
           <Tile
             key={item.key}
             $dragging={draggingKey === item.key}
-            title={item.label}
             style={{ left: pos.x, top: pos.y }}
-            onMouseDown={(e) => handleMouseDown(e, item.key)}
+            onMouseDown={(e) => handleTileMouseDown(e, item.key)}
             onDoubleClick={() => onOpen(item.key)}
           >
-            {item.emoji}
+            <Emoji>{item.emoji}</Emoji>
+            <Label $selected={selectedKey === item.key}>{item.label}</Label>
           </Tile>
         );
       })}
