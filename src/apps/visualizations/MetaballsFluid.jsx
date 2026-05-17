@@ -94,8 +94,8 @@ function MetaballsFluid({ hardwareData }) {
         3,
         Math.min(40, Math.floor(3 + Math.abs(encoders[1].value) * 1.2)),
       );
-      const radiusMul = Math.max(0.3, 1 + encoders[2].value * 0.08);
-      const speedMul = encoders[3].value * 0.04;
+      const radiusMul = Math.max(0.3, 1 + encoders[3].value * 0.08);
+      const speedMul = encoders[2].value * 0.04;
       const distort = encoders[4].value * 0.001;
       // threshold: lower threshold = more stringy tendrils
       const threshold = Math.max(0.35, 1.0 - Math.abs(encoders[4].value) * 0.03);
@@ -296,14 +296,14 @@ function MetaballsFluid({ hardwareData }) {
         ctx.fillText(
           `E2: ${encoders[2].value
             .toString()
-            .padStart(4)} → Radius: ${radiusMul.toFixed(2)}x`,
+            .padStart(4)} → Speed: ${speedMul.toFixed(2)}x`,
           20,
           130,
         );
         ctx.fillText(
           `E3: ${encoders[3].value
             .toString()
-            .padStart(4)} → Speed: ${speedMul.toFixed(2)}x`,
+            .padStart(4)} → Radius: ${radiusMul.toFixed(2)}x`,
           20,
           155,
         );

@@ -73,8 +73,8 @@ function LissajousHarmonograph({ hardwareData }) {
         1,
         Math.floor(Math.abs(40 + encoders[1].value * 4)),
       );
-      const scale = Math.max(0.3, 1 + encoders[2].value * 0.08);
-      const dt = 0.003 + encoders[3].value * 0.0008;
+      const scale = Math.max(0.3, 1 + encoders[3].value * 0.08);
+      const dt = 0.003 + encoders[2].value * 0.0008;
       const ratio = 2 + encoders[4].value * 0.05;
 
       const activeColors = [];
@@ -212,14 +212,14 @@ function LissajousHarmonograph({ hardwareData }) {
         ctx.fillText(
           `E2: ${encoders[2].value
             .toString()
-            .padStart(4)} → Scale: ${scale.toFixed(2)}x`,
+            .padStart(4)} → TimeRate: ${dt.toFixed(4)}`,
           20,
           130,
         );
         ctx.fillText(
           `E3: ${encoders[3].value
             .toString()
-            .padStart(4)} → TimeRate: ${dt.toFixed(4)}`,
+            .padStart(4)} → Scale: ${scale.toFixed(2)}x`,
           20,
           155,
         );

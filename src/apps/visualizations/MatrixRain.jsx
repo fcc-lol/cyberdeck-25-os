@@ -87,8 +87,8 @@ function MatrixRain({ hardwareData }) {
         8,
         Math.floor(40 + encoders[1].value * 2),
       );
-      const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.1);
-      const fallSpeed = Math.max(0.5, 2 + encoders[3].value * 0.3);
+      const sizeMultiplier = Math.max(0.3, 1 + encoders[3].value * 0.1);
+      const fallSpeed = Math.max(0.5, 2 + encoders[2].value * 0.3);
       const mutationRate = Math.min(
         1,
         Math.max(0, encoders[4].value * 0.02),
@@ -246,14 +246,14 @@ function MatrixRain({ hardwareData }) {
         ctx.fillText(
           `E2: ${encoders[2].value
             .toString()
-            .padStart(4)} → FontSize: ${sizeMultiplier.toFixed(2)}x`,
+            .padStart(4)} → FallSpeed: ${fallSpeed.toFixed(2)}x`,
           20,
           130,
         );
         ctx.fillText(
           `E3: ${encoders[3].value
             .toString()
-            .padStart(4)} → FallSpeed: ${fallSpeed.toFixed(2)}x`,
+            .padStart(4)} → FontSize: ${sizeMultiplier.toFixed(2)}x`,
           20,
           155,
         );

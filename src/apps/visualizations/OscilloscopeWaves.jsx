@@ -71,8 +71,8 @@ function OscilloscopeWaves({ hardwareData }) {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const waveCount = Math.max(4, Math.min(60, Math.abs(8 + encoders[1].value * 1)));
-      const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.1);
-      const speedMultiplier = encoders[3].value * 0.02;
+      const sizeMultiplier = Math.max(0.3, 1 + encoders[3].value * 0.1);
+      const speedMultiplier = encoders[2].value * 0.02;
       const frequencyAmount = Math.abs(encoders[4].value) * 0.1;
 
       phaseRef.current += speedMultiplier;
@@ -188,14 +188,14 @@ function OscilloscopeWaves({ hardwareData }) {
         ctx.fillText(
           `E2: ${encoders[2].value
             .toString()
-            .padStart(4)} → Amplitude: ${sizeMultiplier.toFixed(2)}x`,
+            .padStart(4)} → Speed: ${speedMultiplier.toFixed(2)}x`,
           20,
           130,
         );
         ctx.fillText(
           `E3: ${encoders[3].value
             .toString()
-            .padStart(4)} → Speed: ${speedMultiplier.toFixed(2)}x`,
+            .padStart(4)} → Amplitude: ${sizeMultiplier.toFixed(2)}x`,
           20,
           155,
         );

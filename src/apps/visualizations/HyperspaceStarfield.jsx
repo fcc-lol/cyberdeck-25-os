@@ -94,8 +94,8 @@ function HyperspaceStarfield({ hardwareData }) {
       const density = Math.floor(
         Math.max(0, Math.min(2000, 50 + Math.abs(encoders[1].value) * 15)),
       );
-      const brightness = Math.max(0.3, 1 + encoders[2].value * 0.1);
-      const velocity = encoders[3].value * 0.5;
+      const brightness = Math.max(0.3, 1 + encoders[3].value * 0.1);
+      const velocity = encoders[2].value * 0.5;
       const rollRate = encoders[4].value * 0.002;
 
       // Update roll angle
@@ -262,14 +262,14 @@ function HyperspaceStarfield({ hardwareData }) {
         ctx.fillText(
           `E2: ${encoders[2].value
             .toString()
-            .padStart(4)} → Brightness: ${brightness.toFixed(2)}x`,
+            .padStart(4)} → Velocity: ${velocity.toFixed(2)}`,
           20,
           130,
         );
         ctx.fillText(
           `E3: ${encoders[3].value
             .toString()
-            .padStart(4)} → Velocity: ${velocity.toFixed(2)}`,
+            .padStart(4)} → Brightness: ${brightness.toFixed(2)}x`,
           20,
           155,
         );

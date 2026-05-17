@@ -82,8 +82,8 @@ function PerspectiveTunnel({ hardwareData }) {
         4,
         Math.min(50, Math.floor(Math.abs(20 + encoders[1].value * 2))),
       );
-      const sizeMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.1);
-      const speed = Math.max(0, 0.5 + encoders[3].value * 0.4);
+      const sizeMultiplier = Math.max(0.3, 1 + encoders[3].value * 0.1);
+      const speed = Math.max(0, 0.5 + encoders[2].value * 0.4);
       const twist = encoders[4].value * 0.05;
       const sides = Math.max(
         3,
@@ -248,14 +248,14 @@ function PerspectiveTunnel({ hardwareData }) {
       ctx.fillText(
         `E2: ${encoders[2].value
           .toString()
-          .padStart(4)} → Radius: ${sizeMultiplier.toFixed(2)}x`,
+          .padStart(4)} → Speed:  ${speed.toFixed(2)}`,
         20,
         130,
       );
       ctx.fillText(
         `E3: ${encoders[3].value
           .toString()
-          .padStart(4)} → Speed:  ${speed.toFixed(2)}`,
+          .padStart(4)} → Radius: ${sizeMultiplier.toFixed(2)}x`,
         20,
         155,
       );

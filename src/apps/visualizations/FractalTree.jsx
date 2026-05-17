@@ -79,8 +79,8 @@ function FractalTree({ hardwareData }) {
         4,
         Math.min(12, Math.round(8 + encoders[1].value * 0.5)),
       );
-      const lengthMultiplier = Math.max(0.3, 1 + encoders[2].value * 0.08);
-      const windSpeed = encoders[3].value * 0.0008;
+      const lengthMultiplier = Math.max(0.3, 1 + encoders[3].value * 0.08);
+      const windSpeed = encoders[2].value * 0.0008;
       const branchAngle = Math.PI / 7 + encoders[4].value * 0.015;
 
       // Determine active colors
@@ -198,14 +198,14 @@ function FractalTree({ hardwareData }) {
         ctx.fillText(
           `E2: ${encoders[2].value
             .toString()
-            .padStart(4)} → Length: ${lengthMultiplier.toFixed(2)}x`,
+            .padStart(4)} → WindSpeed: ${windSpeed.toFixed(4)}`,
           20,
           130,
         );
         ctx.fillText(
           `E3: ${encoders[3].value
             .toString()
-            .padStart(4)} → WindSpeed: ${windSpeed.toFixed(4)}`,
+            .padStart(4)} → Length: ${lengthMultiplier.toFixed(2)}x`,
           20,
           155,
         );

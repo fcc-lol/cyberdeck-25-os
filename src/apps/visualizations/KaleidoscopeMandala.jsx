@@ -94,8 +94,8 @@ function KaleidoscopeMandala({ hardwareData }) {
         3,
         Math.min(24, 6 + Math.abs(encoders[1].value)),
       );
-      const scale = Math.max(0.3, 1 + encoders[2].value * 0.08);
-      const evolveRate = encoders[3].value * 0.05;
+      const scale = Math.max(0.3, 1 + encoders[3].value * 0.08);
+      const evolveRate = encoders[2].value * 0.05;
       const rotationRate = encoders[4].value * 0.02;
 
       evolveTime += dt * evolveRate;
@@ -239,14 +239,14 @@ function KaleidoscopeMandala({ hardwareData }) {
         ctx.fillText(
           `E2: ${encoders[2].value
             .toString()
-            .padStart(4)} → Scale: ${scale.toFixed(2)}x`,
+            .padStart(4)} → Evolve: ${evolveRate.toFixed(2)}x`,
           20,
           130,
         );
         ctx.fillText(
           `E3: ${encoders[3].value
             .toString()
-            .padStart(4)} → Evolve: ${evolveRate.toFixed(2)}x`,
+            .padStart(4)} → Scale: ${scale.toFixed(2)}x`,
           20,
           155,
         );

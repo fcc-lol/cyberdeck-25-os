@@ -71,8 +71,8 @@ function GeometricMosaic({ hardwareData }) {
 
       // Map encoder inputs
       const gridSize = Math.max(3, Math.min(40, Math.floor(4 + Math.abs(encoders[1].value))));
-      const tileScale = Math.max(0.3, 1 + encoders[2].value * 0.05);
-      const pulseSpeed = encoders[3].value * 0.05;
+      const tileScale = Math.max(0.3, 1 + encoders[3].value * 0.05);
+      const pulseSpeed = encoders[2].value * 0.05;
       const rotationRate = encoders[4].value * 0.01;
       const hueShift = t * rotationRate * 30;
 
@@ -182,12 +182,12 @@ function GeometricMosaic({ hardwareData }) {
           105,
         );
         ctx.fillText(
-          `E2: ${encoders[2].value.toString().padStart(4)} → TileScale: ${tileScale.toFixed(2)}x`,
+          `E2: ${encoders[2].value.toString().padStart(4)} → PulseSpeed: ${pulseSpeed.toFixed(3)}`,
           20,
           130,
         );
         ctx.fillText(
-          `E3: ${encoders[3].value.toString().padStart(4)} → PulseSpeed: ${pulseSpeed.toFixed(3)}`,
+          `E3: ${encoders[3].value.toString().padStart(4)} → TileScale: ${tileScale.toFixed(2)}x`,
           20,
           155,
         );

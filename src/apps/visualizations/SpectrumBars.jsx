@@ -79,8 +79,8 @@ function SpectrumBars({ hardwareData }) {
         8,
         Math.min(128, Math.floor(Math.abs(32 + encoders[1].value * 2))),
       );
-      const amplitude = Math.max(0.3, 1 + encoders[2].value * 0.08);
-      const speed = Math.max(0, 0.005 + encoders[3].value * 0.0015);
+      const amplitude = Math.max(0.3, 1 + encoders[3].value * 0.08);
+      const speed = Math.max(0, 0.005 + encoders[2].value * 0.0015);
       const spectrum = Math.max(0.2, 1 + encoders[4].value * 0.12);
 
       // Determine active colors
@@ -237,14 +237,14 @@ function SpectrumBars({ hardwareData }) {
         ctx.fillText(
           `E2: ${encoders[2].value
             .toString()
-            .padStart(4)} → Amplitude: ${amplitude.toFixed(2)}x`,
+            .padStart(4)} → Speed: ${speed.toFixed(3)}`,
           20,
           130,
         );
         ctx.fillText(
           `E3: ${encoders[3].value
             .toString()
-            .padStart(4)} → Speed: ${speed.toFixed(3)}`,
+            .padStart(4)} → Amplitude: ${amplitude.toFixed(2)}x`,
           20,
           155,
         );
